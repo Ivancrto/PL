@@ -2,7 +2,7 @@
 
 grammar grupal;
 
-r:(IDENT|ENTRECOMILLADOS|COMMENT|ENTEROS | SPACE | PUNTOFIJO | EXPONENCIAL | MIXTO)+;
+r:(IDENT|ENTRECOMILLADOS|COMMENT|ENTEROS | SPACE | PUNTOFIJO | EXPONENCIAL | MIXTO  | NUM_REAL_CONST | NUM_INT_CONST)+;
 
 //ELEMENTOS ENTRECOMILLADOS
 
@@ -34,4 +34,6 @@ EXPONENCIAL : ('-')? [0-9]+ ('E'|'e') ('-')? [0-9]+ {System.out.println("EXPONEN
 ENTEROS :  ('-')? [0-9]+ {System.out.println("ENTERO");}; //'NUM_INT_CONST' (' ')*
 SPACE: (' ') {System.out.println(" ");};
 PUNTOFIJO : ('-')?[0-9]+(.)[0-9]+ {System.out.println("PUNTO FIJO");};
-MIXTO:  ('-')?[0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+ {System.out.println("MIXTO");};]
+MIXTO:  ('-')?[0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+ {System.out.println("MIXTO");};
+NUM_INT_CONST: 'NUM_INT_CONST' {System.out.println("NUM_INT_CONST");};
+NUM_REAL_CONST: 'NUM_REAL_CONST' {System.out.println("NUM_REAL_CONST");};
