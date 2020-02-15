@@ -2,7 +2,7 @@
 
 grammar grupal;
 
-r:(IDENT|ENTRECOMILLADOS|COMMENT|ENTEROS | SPACE | PUNTOFIJO | EXPONENCIAL | MIXTO  | NUM_REAL_CONST | NUM_INT_CONST)+;
+r:(IDENT|ENTRECOMILLADOS|COMMENT|ENTEROS | SPACE | PUNTOFIJO | EXPONENCIAL | MIXTO  | NUM_REAL_CONST | NUM_INT_CONST | STRING_CONST|STRING_CONST2)+;
 
 //ELEMENTOS ENTRECOMILLADOS
 
@@ -31,9 +31,27 @@ COMMENT:'!'.*?[\n] {System.out.println("COMMENT:"+getText());};
 //----------------------------------------------------COMENTARIOS
 
 EXPONENCIAL : ('-')? [0-9]+ ('E'|'e') ('-')? [0-9]+ {System.out.println("EXPONENCIAL");};
+
 ENTEROS :  ('-')? [0-9]+ {System.out.println("ENTERO");}; //'NUM_INT_CONST' (' ')*
+
 SPACE: (' ') {System.out.println(" ");};
+
 PUNTOFIJO : ('-')?[0-9]+(.)[0-9]+ {System.out.println("PUNTO FIJO");};
+
 MIXTO:  ('-')?[0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+ {System.out.println("MIXTO");};
+
 NUM_INT_CONST: 'NUM_INT_CONST' {System.out.println("NUM_INT_CONST");};
+
 NUM_REAL_CONST: 'NUM_REAL_CONST' {System.out.println("NUM_REAL_CONST");};
+
+STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') {
+    int longuitud = getText().length();
+    String s = getText().substring(1, longuitud-1);
+    String s2= s.replace("\'\'", "\'");
+    System.out.println(s2);};
+    
+STRING_CONST2: ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"') {
+    int longuitud = getText().length();
+    String s = getText().substring(1, longuitud-1);
+    String text = s.replace("\"\"", "\"");
+    System.out.println(text);};
