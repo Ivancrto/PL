@@ -49,7 +49,7 @@ STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0
       int longuitud = getText().length();
       String s = getText().substring(1, longuitud-1);
       String s2= s.replace("\'\'", "\'");
-      System.out.println(s2);};
+      System.out.println(s2);
     }
     if(getText().charAt(0)=='\"'){
       int longuitud = getText().length();
