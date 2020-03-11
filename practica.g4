@@ -4,7 +4,8 @@ grammar grupal;
 
 
 
-r:(IDENT|ENTRECOMILLADOS|COMMENT | SPACE | NUM_REAL_CONST | NUM_INT_CONST | STRING_CONST | ERRORES)+;
+r:(IDENT|ENTRECOMILLADOS|COMMENT | SPACE | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
+        NUM_INT_CONST_O | NUM_INT_CONST_H  | STRING_CONST | ERRORES)+;
 
 //ELEMENTOS ENTRECOMILLADOS
 
@@ -33,6 +34,9 @@ COMMENT:'!'.*?[\n] {System.out.println("COMMENT:"+getText());};
 //----------------------------------------------------COMENTARIOS
 NUM_INT_CONST :  ('-')? [0-9]+ {System.out.println("ENTERO");}; //'NUM_INT_CONST' (' ')*
 NUM_REAL_CONST : ('-')?  ([0-9]+ ('E'|'e') ('-')? [0-9]+   |  [0-9]+(.)[0-9]+ |  [0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+)  {System.out.println("REAL");};
+NUM_INT_CONST_B: ('b\'')('0'|'1')+'\'' ;
+NUM_INT_CONST_O: ('o\'')([0-7])+'\'';
+NUM_INT_CONST_H: ('z\'')([0-9]|[A-F])+'\'' ;
 SPACE: (' ') {System.out.println(" ");};
 
 STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"') {
@@ -63,7 +67,7 @@ dcl: tipo dclprima;
 dclprima:',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | ;
 defcte: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  | '::' varlist ';' defvar | ;
 ctelist: ',' IDENT '=' simpvalue ctelist  | ;
-simpvalue: 'NUM_INT_CONST' | 'NUM_REAL_CONST' | 'STRING_CONST'  |  'NUM_INT_CONST_B' | 'NUM_INT_CONST_O' | 'NUM_INT_CONST_H';
+simpvalue: NUM_INT_CONST | NUM_REAL_CONST | STRING_CONST  |  NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H;
 defvar: tipo '::' varlist ';' defvar | tipo;
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
 charlength: '(' NUM_INT_CONST ')' | ;
