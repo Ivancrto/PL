@@ -4,7 +4,7 @@ grammar grupal;
 
 
 
-r:(IDENT|ENTRECOMILLADOS|COMMENT | SPACE | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
+r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
         NUM_INT_CONST_O | NUM_INT_CONST_H  | STRING_CONST | ERRORES)+;
 
 //ELEMENTOS ENTRECOMILLADOS
@@ -37,7 +37,6 @@ NUM_REAL_CONST : ('-')?  ([0-9]+ ('E'|'e') ('-')? [0-9]+   |  [0-9]+(.)[0-9]+ | 
 NUM_INT_CONST_B: ('b\'')('0'|'1')+'\'' ;
 NUM_INT_CONST_O: ('o\'')([0-7])+'\'';
 NUM_INT_CONST_H: ('z\'')([0-9]|[A-F])+'\'' ;
-SPACE: (' ') {System.out.println(" ");};
 
 STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"') {
      if(getText().charAt(0)=='\''){
