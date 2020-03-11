@@ -21,7 +21,7 @@ ENTRECOMILLADOS: '"'.*?'"' {
 IDENT:VOCAB(VOCAB|'_'|NUM)+ {System.out.println("IDENT:"+getText());};
 
 fragment
-VOCAB:[a-nA-No-z];
+VOCAB:[a-zA-Z];
 
 fragment
 NUM:[0-9];
@@ -54,9 +54,9 @@ STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0
      }};
 WS : [ \r\t\n] -> skip;
 
-ERRORES: '.' {};
+ERRORES: 'erj' {};
 
-prg : 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END'  'PROGRAM' IDENT subproglist;
+prg :'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
@@ -112,8 +112,5 @@ etiquetaspp: etiquetasp | listaetiquetas;
 etiquetasp: simpvalue | ':' simpvalue | ;
 casosp: '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
 listaetiquetas: ',' simpvalue | ;
-
-
-
 
 
