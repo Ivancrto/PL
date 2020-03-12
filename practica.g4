@@ -4,6 +4,7 @@ grammar grupal;
 
 
 
+
 r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
         NUM_INT_CONST_O | NUM_INT_CONST_H  | STRING_CONST | ERRORES)+;
 
@@ -30,7 +31,7 @@ NUM:[0-9];
 //COMENTARIOS
 //¿Cómo se hace lo de fin de linea?
 
-COMMENT:'!'.*?[\n]  {System.out.println("COMMENT:"+getText());};
+COMMENT: ('!'.*?[\n])+ -> skip;
 //----------------------------------------------------COMENTARIOS
 NUM_INT_CONST :  ('-')? [0-9]+ {System.out.println("ENTERO");}; //'NUM_INT_CONST' (' ')*
 NUM_REAL_CONST : ('-')?  ([0-9]+ ('E'|'e') ('-')? [0-9]+   |  [0-9]+(.)[0-9]+ |  [0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+)  {System.out.println("REAL");};
@@ -39,24 +40,13 @@ NUM_INT_CONST_O: ('o\'')([0-7])+'\'';
 NUM_INT_CONST_H: ('z\'')([0-9]|[A-F])+'\'' ;
 
 
-STRING_CONST:('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"') {
-     if(getText().charAt(0)=='\''){
-       int longuitud = getText().length();
-       String s = getText().substring(1, longuitud-1);
-       String s2= s.replace("\'\'", "\'");
-       System.out.println(s2);
-     }
-     if(getText().charAt(0)=='\"'){
-       int longuitud = getText().length();
-       String s = getText().substring(1, longuitud-1);
-       String text = s.replace("\"\"", "\"");
-       System.out.println(text);
-     }};
+STRING_CONST:((('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"')) (' + ')?)+ {
+     };
 WS : [ \r\t\n] -> skip;
 
 ERRORES: 'erj' {};
 
-prg:'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
@@ -64,11 +54,11 @@ cablist: decproc decsubprog | decfun decsubprog;
 decsubprog: decproc decsubprog | decfun decsubprog | ;
 sentlist: sent sentlist | ;
 dcl: tipo dclprima;
-dclprima: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | '::' varlist ';' defvar | ;
+defvar: tipo '::' varlist ';' defvar | tipo | ;
 defcte: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | ;
+dclprima: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | '::' varlist ';' defvar | ;
 ctelist: ',' IDENT '=' simpvalue ctelist  | ;
 simpvalue: NUM_INT_CONST | NUM_REAL_CONST | STRING_CONST  |  NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H;
-defvar: tipo '::' varlist ';' defvar | tipo;
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
 charlength: '(' NUM_INT_CONST ')' | ;
 varlist: IDENT init varlistPRIMA;
