@@ -19,7 +19,7 @@ ENTRECOMILLADOS: '"'.*?'"' {
 //-------------------------------------------ELEMENTOS ENTRECOMILLADOS
 
 //IDENTIFICADORES
-IDENT:VOCAB(VOCAB|'_'|NUM)+ {System.out.println("IDENT:"+getText());};
+IDENT:VOCAB(VOCAB|'_'|NUM)* {System.out.println("IDENT:"+getText());};
 
 fragment
 VOCAB:[a-zA-Z];
