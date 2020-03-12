@@ -31,7 +31,7 @@ NUM:[0-9];
 //COMENTARIOS
 //¿Cómo se hace lo de fin de linea?
 
-COMMENT: ('!'.*?[\n])+;
+COMMENT: ('!'.*?[\n])+ {System.out.println("COMENTARIO: "+getText());};
 //----------------------------------------------------COMENTARIOS
 NUM_INT_CONST :  ('-')? [0-9]+ {System.out.println("ENTERO");}; //'NUM_INT_CONST' (' ')*
 NUM_REAL_CONST : ('-')?  ([0-9]+ ('E'|'e') ('-')? [0-9]+   |  [0-9]+(.)[0-9]+ |  [0-9]+ (.)[0-9]+ ('E'|'e')('-')?[0-9]+)  {System.out.println("REAL");};
