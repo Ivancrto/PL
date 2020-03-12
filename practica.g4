@@ -46,80 +46,62 @@ WS : [ \r\t\n] -> skip;
 
 ERRORES: 'erj' {};
 
-prg : comment'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
-
-dcllist :dcllistp;
-dcllistp:dcl dcllistp | ;
-
-cabecera : comment'INTERFACE' cablist 'END' 'INTERFACE' | ;
-cablist : decproc decsubprog | decfun decsubprog;
-decsubprog : decproc decsubprog | decfun decsubprog | ;
-sentlist : sent sentlist | ;
-
-dcl : comment tipo dclp;
-dclp: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte| '::' varlist ';' defvar;
-
-defcte : tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';'defcte | ;
-ctelist : ',' IDENT '=' simpvalue ctelist |  ;
-simpvalue : NUM_INT_CONST | NUM_REAL_CONST | STRING_CONST|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H;
-defvar : tipo '::' varlist ';' defvar | ;
-tipo : 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
-charlength : '(' NUM_INT_CONST ')' | ;
-
-varlist: IDENT init varlistp;
-varlistp: ',' varlist| ;
-
-init : '=' simpvalue | ;
-decproc: '=' 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
-formal_paramlist : '(' nomparamlist ')' | ;
-
-nomparamlist : IDENT nomparamlistp | ;
-nomparamlistp: ',' nomparamlist | ;
-
-dec_s_paramlist : tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist | ;
-tipoparam : 'IN' | 'OUT' | 'INOUT';
-decfun : comment 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT;
-dec_f_paramlist : tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
-
-sent : IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
-sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
-sentpp: 'THEN' sentlist sentp | sent;
-sentppp: comment 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
-
-exp : factor expp ;
-expp:  op exp expp | ;
-
+prg: comment'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
+dcllist: dcllistp;
+dcllistp: dcl dcllistp | ;
+cabecera: comment'INTERFACE' cablist 'END' 'INTERFACE' | ;
+cablist: decproc decsubprog | decfun decsubprog;
+decsubprog: decproc decsubprog | decfun decsubprog | ;
+sentlist: sent sentlist | ;
+dcl: comment tipo dclprima;
+defvar: tipo '::' varlist ';' defvar | tipo | ;
+defcte: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | ;
+dclprima: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | '::' varlist ';' defvar | ;
+ctelist: ',' IDENT '=' simpvalue ctelist  | ;
+simpvalue: NUM_INT_CONST | NUM_REAL_CONST | STRING_CONST  |  NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H;
+tipo: comment 'INTEGER' | comment 'REAL' | comment 'CHARACTER' charlength;
+charlength: '(' NUM_INT_CONST ')' | ;
+varlist: IDENT init varlistPRIMA;
+varlistPRIMA: ',' varlist | ;
+init: '=' simpvalue | ;
+decproc:  comment'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist comment'END' 'SUBROUTINE' IDENT;
+formal_paramlist:  | '(' nomparamlist ')';
+nomparamlist: IDENT nomparamlistPRIMA;
+nomparamlistPRIMA:',' nomparamlist | ;
+dec_s_paramlist: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist | ;
+tipoparam: 'IN' | 'OUT' | 'INOUT';
+decfun:  comment 'FUNCTION' IDENT '(' nomparamlist ')'  tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT;
+dec_f_paramlist: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';'  dec_f_paramlist | ;
+sent: IDENT '=' exp ';' | proc_call ';' |  'DO' sentppp |  'IF' '(' expcond ')' sentpp | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
+sentp : 'ENDIF' |'ELSE' sentlist 'ENDINF';
+sentpp : 'THEN' sentlist sentp | sent;
+sentppp : comment 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
+exp : factor expPRIMA;
+expPRIMA : op exp expPRIMA | ;
 op : oparit;
 oparit : '+' | '-' | '*' | '/';
-
-factor : IDENT factorp |simpvalue | '('exp')';
-factorp : '(' exp explist ')' | ;
-
+factor : simpvalue | '(' exp ')' | IDENT factorPRIMA;
+factorPRIMA: '(' exp explist ')'| ;
 explist : ',' exp explist | ;
 proc_call : comment 'CALL' IDENT subpparamlist;
 subpparamlist : '(' exp explist ')' | ;
 subproglist : codproc subproglist | codfun subproglist | ;
 codproc : comment 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sent sentlist 'END' 'SUBROUTINE' IDENT;
-codfun : comment 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sent sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codfun : comment 'FUNCTION' IDENT '(' nomparamlist ')'  tipo '::' IDENT ';'  dec_f_paramlist dcllist sent sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+//OPCIONAL
 
-expcond : factorcond expcondp;
-expcondp : oplog expcond expcondp| ;
-
-oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
-factorcond : exp opcomp exp | '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' | '.FALSE.';
-opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
-doval : NUM_INT_CONST | IDENT;
-
-casos : comment'CASE' casos | ;
-casosp : '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
-
-etiquetas : simpvalue etiquetaspp | ':' simpvalue;
-etiquetasp : simpvalue | ;
-etiquetaspp : ':' etiquetasp | listaetiquetas;
-
-
-listaetiquetas : ',' simpvalue | ;
-
+expcond: factorcond expcondp;
+expcondp: oplog expcond | ;
+oplog: '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
+factorcond: exp opcomp exp | '(' expcond ')' | '.NOT.' factorcond | '.TRUE.' | '.FALSE.';
+opcomp: '<' | '>' | '<=' | '>=' | '==' | '/=';
+doval: NUM_INT_CONST | IDENT;
+casos: 'CASE' casosp | ;
+etiquetas: simpvalue etiquetaspp;
+etiquetaspp: etiquetasp | listaetiquetas;
+etiquetasp: simpvalue | ':' simpvalue | ;
+casosp: '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
+listaetiquetas: ',' simpvalue | ;
 
 //COMENTARIOS
 comment: COMMENT comment| ;
