@@ -91,7 +91,7 @@ codfun : 'FUNCTION' IDENT '(' nomparamlist ')'  tipo '::' IDENT ';'  dec_f_param
 //OPCIONAL
 
 expcond: factorcond expcondp;
-expcondp: oplog expcond | ;
+expcondp: oplog expcond excondp | ;
 oplog: '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
 factorcond: exp opcomp exp | '(' expcond ')' | '.NOT.' factorcond | '.TRUE.' | '.FALSE.';
 opcomp: '<' | '>' | '<=' | '>=' | '==' | '/=';
