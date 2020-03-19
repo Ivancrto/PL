@@ -14,25 +14,31 @@ public class ClasePrincipal {
 // Preparar el fichero de entrada para asignarlo al analizador léxico
             CharStream input = CharStreams.fromFileName(args[0]);
 // Crear el objeto correspondiente al analizador léxico con el fichero de entrada
-            SimpleLexer analex = new SimpleLexer(input);
+            grupalLexer analex = new grupalLexer(input);
 
-            //--------------------------------------------------------------------------------
             //PARA LOS ERRORES
-            analex.removeErrorListeners ();
-            //--------------------------------------------------------------------------------
-
+            //analex.removeErrorListeners ();
+            //analex.addErrorListener (new TestE_Listener.VerboseListener ());
 
 // Identificar al analizador léxico como fuente de tokens para el sintactico
             CommonTokenStream tokens = new CommonTokenStream (analex);
 // Crear el objeto correspondiente al analizador sintáctico
-            SimpleParser anasint = new SimpleParser(tokens);
+            grupalParser anasint = new grupalParser(tokens);
 
-            //--------------------------------------------------------------------------------
             //PARA LOS ERRORES
-            MyErrorStrategy error= new MyErrorStrategy ();
-            anasint.setErrorHandler (error);
             anasint.removeErrorListeners ();
             anasint.addErrorListener (new TestE_Listener.VerboseListener ());
+            anasint.setErrorHandler (new MyErrorStrategy ());
+
+            //anasint.setErrorHandler (new MyErrorStrategy ());
+
+            //--------------------------------------------------------------------------------
+            /*class BailSimpleLexer extends grupalLexer {
+                public BailSimpleLexer(CharStream input) { super(input); }
+                public void recover(LexerNoViableAltException e) {
+                    throw new RuntimeException(e); // Bail out
+                }
+            }*/
             //--------------------------------------------------------------------------------
 
 
@@ -45,12 +51,12 @@ HelloParser anasint = new HelloParser(tokens, new sintesis());
 Comenzar el análisis llamando al axioma de la gramática
 Atención, sustituye "AxiomaDeLaGramatica" por el nombre del axioma de tu gramática
 */
-            anasint.prog();
+            anasint.prg();
         } catch (org.antlr.v4.runtime.RecognitionException e) { //Fallo al reconocer la entrada
             System.err.println("REC " + e.getMessage());
         } catch (IOException e) { //Fallo de entrada/salida
             System.err.println("IO " + e.getMessage());
-        } catch (RuntimeException e) { //CUalquier otro fallo
+        } catch (RuntimeException e) { //Cualquier otro fallo
             System.err.println("RUN " + e.getMessage());
         }
     }
