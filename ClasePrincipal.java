@@ -30,15 +30,7 @@ public class ClasePrincipal {
             anasint.addErrorListener (new TestE_Listener.VerboseListener ());
             anasint.setErrorHandler (new MyErrorStrategy ());
 
-            //anasint.setErrorHandler (new MyErrorStrategy ());
-
-            //--------------------------------------------------------------------------------
-            /*class BailSimpleLexer extends grupalLexer {
-                public BailSimpleLexer(CharStream input) { super(input); }
-                public void recover(LexerNoViableAltException e) {
-                    throw new RuntimeException(e); // Bail out
-                }
-            }*/
+            
             //--------------------------------------------------------------------------------
 
 
