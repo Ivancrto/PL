@@ -17,7 +17,7 @@ public class TestE_Listener {
                 throws ParseCancellationException {
 
                System.err.println("línea "+line+" y columna "+charPositionInLine+": "+msg);
-            //throw new ParseCancellationException("HASTA LOS COJONES "+line+":"+charPositionInLine+" at "+ offendingSymbol+": "+msg);
+            
         }
 
     }
