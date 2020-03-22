@@ -10,10 +10,7 @@ r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONS
 
 //ELEMENTOS ENTRECOMILLADOS
 
-ENTRECOMILLADOS: '"'.*?'"' /*{
-                           String sub= (String)getText().subSequence(1,getText().length()-1);
-                           System.out.println("SUBS:"+sub);
-}*/;
+ENTRECOMILLADOS: '"'.*?'"' ;
 
 
 //-------------------------------------------ELEMENTOS ENTRECOMILLADOS
