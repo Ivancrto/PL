@@ -64,7 +64,7 @@ WS : [ \r\t\n] -> skip;
 
 ERRORES: . ;
 
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {insertTxtC("hola ");};
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
@@ -73,12 +73,15 @@ decsubprog: decproc decsubprog | decfun decsubprog | ;
 sentlist: sent sentlist | ;
 dcl: tipo dclp;
 dclp: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte| '::' varlist ';' defvar | ;
-defcte: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte | ;
-ctelist: ',' IDENT '=' simpvalue ctelist |  ;
-simpvalue: NUM_INT_CONST | NUM_REAL_CONST | STRING_CONST|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H;
+defcte returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re = "#define"
+                                                                                                    + $tipo.s + $IDENT.text + $simpvalue.s ;
+                                                                                                    insertTxtC("#define "+ $tipo.s +" " +$IDENT.text +" "+ $simpvalue.s);    } | ;
+ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist |  ;
+simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
+                |NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H; //FALTA POR TERMINAR, ES DE LA PARTE OPCIONAL
 defvar: tipo '::' varlist ';' defvar | ;
-tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
-charlength: '(' NUM_INT_CONST ')' | ;
+tipo returns[String s]: 'INTEGER' {$s="int";}| 'REAL' {$s="float";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
+charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +']';}| ;
 varlist: IDENT init varlistp;
 varlistp: ',' varlist | ;
 init: '=' simpvalue | ;
@@ -96,8 +99,8 @@ sentpp: 'THEN' sentlist sentp | sent;
 sentppp: 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
 exp: factor expp ;
 expp:  op exp expp | ;
-op: oparit;
-oparit: '+' | '-' | '*' | '/';
+op returns[char c]: oparit {$c = $oparit.c;};
+oparit returns[char c]: '+' {$c='+';} | '-' {$c='-';} | '*' {$c='+';}| '/' {$c='/';};
 factor: IDENT factorp |simpvalue | '('exp')';
 factorp: '(' exp explist ')' | ;
 explist: ',' exp explist | ;
@@ -109,9 +112,9 @@ codfun: 'FUNCTION' m1=IDENT '(' nomparamlist ')' tipo '::'  m2=IDENT ';' dec_f_p
                 System.out.println("Hola");};
 expcond: factorcond expcondp;
 expcondp: oplog expcond expcondp| ;
-oplog: '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
-factorcond: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' | '.FALSE.' | exp opcomp exp ;
-opcomp: '<' | '>' | '<=' | '>=' | '==' | '/=';
+oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^";}| '.NEQV.' {$s="^";};
+factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
+opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
 doval: NUM_INT_CONST | IDENT;
 casos: 'CASE' casosp | ;
 casosp: '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
