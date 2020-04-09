@@ -2,8 +2,30 @@
 
 grammar grupal;
 
-
-
+@members {
+     File file = new File("codico.c");
+     FileWriter fr;
+    public void insertTxtC(String t){
+    	{
+    		try {
+    			fr = new FileWriter(file, true);
+    			fr.write(t);
+    			fr.close();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    	}}
+}
+@parser::header {
+    import java.io.FileWriter;
+    import java.io.File;
+    import java.io.IOException;
+}
+@lexer::header {
+    import java.io.FileWriter;
+    import java.io.File;
+    import java.io.IOException;
+}
 
 r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
         NUM_INT_CONST_O | NUM_INT_CONST_H  | STRING_CONST | ERRORES)+;
@@ -26,7 +48,7 @@ NUM:[0-9];
 //----------------------------------------------------IDENTIFICADORES
 
 //COMENTARIOS
-//¿Cómo se hace lo de fin de linea?
+
 
 COMMENT: ('!'.*?[\n])+ -> skip;
 //----------------------------------------------------COMENTARIOS
@@ -37,13 +59,12 @@ NUM_INT_CONST_O: ('o\'')([0-7])+'\'';
 NUM_INT_CONST_H: ('z\'')([0-9]|[A-F])+'\'' ;
 
 
-STRING_CONST:((('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"')) (' + ')?)+ {
-     };
+STRING_CONST:((('\'')([a-zA-Z]+|[0-9]+|' '|'\'\''|'"')+('\'') | ('"')([a-zA-Z]+|[0-9]+|' '|'""'|'\'')+('"')) (' + ')?)+ ;
 WS : [ \r\t\n] -> skip;
 
 ERRORES: . ;
 
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist;
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {insertTxtC("hola ");};
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
@@ -67,7 +88,7 @@ nomparamlist: IDENT nomparamlistp;
 nomparamlistp: ',' nomparamlist | ;
 dec_s_paramlist: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist | ;
 tipoparam: 'IN' | 'OUT' | 'INOUT';
-decfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT;
+decfun: 'FUNCTION' m1=IDENT '(' nomparamlist ')' tipo '::' m2=IDENT ';' dec_f_paramlist 'END' 'FUNCTION' m3=IDENT {   System.out.println($m1.text);};
 dec_f_paramlist: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 sent: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
@@ -82,9 +103,10 @@ factorp: '(' exp explist ')' | ;
 explist: ',' exp explist | ;
 proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
-subproglist: codproc subproglist | codfun subproglist | ;
+subproglist: codproc subproglist {}| codfun subproglist {}| {};
 codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sent sentlist 'END' 'SUBROUTINE' IDENT;
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sent sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codfun: 'FUNCTION' m1=IDENT '(' nomparamlist ')' tipo '::'  m2=IDENT ';' dec_f_paramlist dcllist sent sentlist  m3=IDENT '=' exp ';' 'END' 'FUNCTION' m4=IDENT {
+                System.out.println("Hola");};
 expcond: factorcond expcondp;
 expcondp: oplog expcond expcondp| ;
 oplog: '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
@@ -97,6 +119,3 @@ etiquetas: simpvalue etiquetaspp | ':' simpvalue;
 etiquetasp: simpvalue | ;
 etiquetaspp: ':' etiquetasp | listaetiquetas;
 listaetiquetas: ',' simpvalue | ;
-
-//COMENTARIOS
-comment: COMMENT comment| ;
