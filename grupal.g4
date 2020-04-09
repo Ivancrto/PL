@@ -75,16 +75,17 @@ dcl: tipo dclp;
 dclp: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte| '::' varlist ';' defvar | ;
 defcte returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re = "#define"
                                                                                                     + $tipo.s + $IDENT.text + $simpvalue.s ;
-                                                                                                    insertTxtC("#define "+ $tipo.s +" " +$IDENT.text +" "+ $simpvalue.s);    } | ;
+                                                                                                    insertTxtC("#define "+ $tipo.s +$IDENT.text +" "+ $simpvalue.s);    } | ;
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist |  ;
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
                 |NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H; //FALTA POR TERMINAR, ES DE LA PARTE OPCIONAL
-defvar: tipo '::' varlist ';' defvar | ;
-tipo returns[String s]: 'INTEGER' {$s="int";}| 'REAL' {$s="float";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
-charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +']';}| ;
-varlist: IDENT init varlistp;
-varlistp: ',' varlist | ;
-init: '=' simpvalue | ;
+defvar returns [String re]: tipo '::' varlist ';' defvar {$re = $tipo.s + $varlist.s + ";";
+                                                            insertTxtC($tipo.s + $varlist.s + ";");}| ;
+tipo returns[String s]: 'INTEGER' {$s="int ";}| 'REAL' {$s="float ";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
+charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| ;
+varlist returns [String s]: IDENT init varlistp{$s = $IDENT.text + $init.s + $varlistp.s;};
+varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";}; //Esta puesto la lamda asi debido a que sino salia null en el codigo.c
+init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";}; //Esta puesto la lamda asi debido a que salia null en el codigo.c
 decproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
 formal_paramlist: '(' nomparamlist ')' | ;
 nomparamlist: IDENT nomparamlistp;
