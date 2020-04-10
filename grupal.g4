@@ -73,11 +73,12 @@ decsubprog: decproc decsubprog | decfun decsubprog | ;
 
 sentlist: sent sentlist | ;
 
+//#DEFINE
 dcl returns[String re]: tipo dclp {$re=$tipo.s+$dclp.re; insertTxtC($tipo.s+$dclp.re);}; //si sale repetido el float es por esta funcion
-dclp returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re=','+$IDENT.text+'='+$simpvalue.s+$ctelist.re+";\n"+$defcte.re;}| '::' varlist ';' defvar {$re= $varlist.s+";\n"+$defvar.re;}| {$re="";};
-defcte returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re = "#define"
-                                                                                                    + $tipo.s + $IDENT.text + $simpvalue.s ;
-                                                                                                    insertTxtC("#define "+ $tipo.s +$IDENT.text +" "+ $simpvalue.s);    } | {$re="";} ;
+dclp returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re="#define "+$IDENT.text+'='+$simpvalue.s+$ctelist.re+";\n"+$defcte.re;} //es de tipo define
+                                        | '::' varlist ';' defvar {$re= $varlist.s+";\n"+$defvar.re;}| {$re="";}; //NO ES de tipo define
+defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {$re = "#define " + $tipo.s + $IDENT.text + $simpvalue.s +";\n" + $defcte.re; }| {$re="";}  ;
+
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+'='+$simpvalue.s+$ctelist.re;}| {$re="";} ;
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
                 |NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H; //FALTA POR TERMINAR, ES DE LA PARTE OPCIONAL
