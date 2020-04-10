@@ -3,7 +3,7 @@
 grammar grupal;
 
 @members {
-     File file = new File("codico.c");
+     File file = new File("codigo.c");
      FileWriter fr;
     public void insertTxtC(String t){
     	{
@@ -70,31 +70,49 @@ dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
 cablist: decproc decsubprog | decfun decsubprog;
 decsubprog: decproc decsubprog | decfun decsubprog | ;
+
 sentlist: sent sentlist | ;
-dcl: tipo dclp;
-dclp: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte| '::' varlist ';' defvar | ;
+
+dcl returns[String re]: tipo dclp {$re=$tipo.s+$dclp.re; insertTxtC($tipo.s+$dclp.re);}; //si sale repetido el float es por esta funcion
+dclp returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re=','+$IDENT.text+'='+$simpvalue.s+$ctelist.re+";\n"+$defcte.re;}| '::' varlist ';' defvar {$re= $varlist.s+";\n"+$defvar.re;}| {$re="";};
 defcte returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re = "#define"
                                                                                                     + $tipo.s + $IDENT.text + $simpvalue.s ;
-                                                                                                    insertTxtC("#define "+ $tipo.s +$IDENT.text +" "+ $simpvalue.s);    } | ;
-ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist |  ;
+                                                                                                    insertTxtC("#define "+ $tipo.s +$IDENT.text +" "+ $simpvalue.s);    } | {$re="";} ;
+ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+'='+$simpvalue.s+$ctelist.re;}| {$re="";} ;
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
                 |NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H; //FALTA POR TERMINAR, ES DE LA PARTE OPCIONAL
 defvar returns [String re]: tipo '::' varlist ';' defvar {$re = $tipo.s + $varlist.s + ";";
-                                                            insertTxtC($tipo.s + $varlist.s + ";");}| ;
+                                                            insertTxtC($tipo.s + $varlist.s + ";");}| {$re="";} ;
 tipo returns[String s]: 'INTEGER' {$s="int ";}| 'REAL' {$s="float ";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
 charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| ;
 varlist returns [String s]: IDENT init varlistp{$s = $IDENT.text + $init.s + $varlistp.s;};
 varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";}; //Esta puesto la lamda asi debido a que sino salia null en el codigo.c
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";}; //Esta puesto la lamda asi debido a que salia null en el codigo.c
-decproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
-formal_paramlist: '(' nomparamlist ')' | ;
+
+//Hecha la parte opcional solo de los IN, OUT, INOUT
+decproc returns [String re]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT {
+                                                                                                            $re="void "+$IDENT.text;
+                                                                                                            if($formal_paramlist.esVoid==1)
+                                                                                                                $re+="( void )";
+                                                                                                            else
+                                                                                                                $re+="("+$dec_s_paramlist.re+")";
+                                                                                                            $re+=";\n";
+                                                                                                            insertTxtC($re);
+                                                                                                            };
+formal_paramlist returns [int esVoid]: '(' nomparamlist ')' {$esVoid=0;}| {$esVoid=1;};
 nomparamlist: IDENT nomparamlistp;
 nomparamlistp: ',' nomparamlist | ;
-dec_s_paramlist: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist | ;
-tipoparam: 'IN' | 'OUT' | 'INOUT';
-decfun: 'FUNCTION' m1=IDENT '(' nomparamlist ')' tipo '::' m2=IDENT ';' dec_f_paramlist 'END' 'FUNCTION' m3=IDENT {   System.out.println($m1.text);};
+dec_s_paramlist returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist {$re=$tipo.s + $tipoparam.c+$IDENT.text;
+                                                                                                        if(!($dec_s_paramlist.re).equals("")){
+                                                                                                            $re+=','+$dec_s_paramlist.re;
+                                                                                                        }}
+                                                                                                   |{$re="";} ;
+tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
+decfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT ;
 dec_f_paramlist: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
+
 sent: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
+
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
 sentpp: 'THEN' sentlist sentp | sent;
 sentppp: 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
@@ -109,14 +127,13 @@ proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
 codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sent sentlist 'END' 'SUBROUTINE' IDENT;
-codfun: 'FUNCTION' m1=IDENT '(' nomparamlist ')' tipo '::'  m2=IDENT ';' dec_f_paramlist dcllist sent sentlist  m3=IDENT '=' exp ';' 'END' 'FUNCTION' m4=IDENT {
-                System.out.println("Hola");};
+codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {};
 expcond: factorcond expcondp;
 expcondp: oplog expcond expcondp| ;
 oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^";}| '.NEQV.' {$s="^";};
 factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
-doval: NUM_INT_CONST | IDENT;
+doval returns [String doVal]: NUM_INT_CONST {$doVal=$NUM_INT_CONST.text;} | IDENT{$doVal=$IDENT.text;};
 casos: 'CASE' casosp | ;
 casosp: '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
 etiquetas: simpvalue etiquetaspp | ':' simpvalue;
