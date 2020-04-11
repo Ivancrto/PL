@@ -74,16 +74,24 @@ decsubprog: decproc decsubprog | decfun decsubprog | ;
 sentlist: sent sentlist | ;
 
 //#DEFINE
-dcl returns[String re]: tipo dclp {$re=$tipo.s+$dclp.re; insertTxtC($tipo.s+$dclp.re);}; //si sale repetido el float es por esta funcion
-dclp returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {$re="#define "+$IDENT.text+'='+$simpvalue.s+$ctelist.re+";\n"+$defcte.re;} //es de tipo define
-                                        | '::' varlist ';' defvar {$re= $varlist.s+";\n"+$defvar.re;}| {$re="";}; //NO ES de tipo define
-defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {$re = "#define " + $tipo.s + $IDENT.text + $simpvalue.s +";\n" + $defcte.re; }| {$re="";}  ;
+dcl  returns[String re]: tipo dclp [$tipo.s]  { };
+dclp [String h] returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
+                        String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
+                        String[] parts = define.split(",");
+                        for(String i:parts){
+                            insertTxtC("#define "+ $h + i + ";\n");
+                        }
+                   } //es de tipo define
 
-ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+'='+$simpvalue.s+$ctelist.re;}| {$re="";} ;
+                                        | '::' varlist ';' defvar {insertTxtC($h + " " + $varlist.s+";\n"+$defvar.re+"\n");}| {$re="";}; //NO ES de tipo define
+defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {insertTxtC("#define " + $tipo.s + $IDENT.text + " " + $simpvalue.s +";\n");   }| {$re="";}  ;
+
+ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+ " " +$simpvalue.s+$ctelist.re;}| {$re="";} ;
+
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
                 |NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H; //FALTA POR TERMINAR, ES DE LA PARTE OPCIONAL
 defvar returns [String re]: tipo '::' varlist ';' defvar {$re = $tipo.s + $varlist.s + ";";
-                                                            insertTxtC($tipo.s + $varlist.s + ";");}| {$re="";} ;
+                                                            insertTxtC($tipo.s + $varlist.s + ";\n");}| {$re="";} ;
 tipo returns[String s]: 'INTEGER' {$s="int ";}| 'REAL' {$s="float ";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
 charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| ;
 varlist returns [String s]: IDENT init varlistp{$s = $IDENT.text + $init.s + $varlistp.s;};
@@ -141,4 +149,3 @@ etiquetas: simpvalue etiquetaspp | ':' simpvalue;
 etiquetasp: simpvalue | ;
 etiquetaspp: ':' etiquetasp | listaetiquetas;
 listaetiquetas: ',' simpvalue | ;
-
