@@ -15,8 +15,9 @@ grammar grupal;
     			e.printStackTrace();
     		}
     	}}
-    
+
     public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
+    public HashMap<String, HashMap<String,Boolean>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,Boolean>>();
     public void comprobar(String id){
         if(mapVarSub.get(id)==null){
             System.out.println("La variable "+id+" no coincide con ningun argumento.");
@@ -87,6 +88,7 @@ WS : [ \r\t\n] -> skip;
 ERRORES: . ;
 
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
+
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
@@ -120,7 +122,7 @@ varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";}; //E
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";}; //Esta puesto la lamda asi debido a que salia null en el codigo.c
 
 //Hecha la parte opcional solo de los IN, OUT, INOUT
-decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' id2=IDENT {
+decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {
                                                                                                             comprobarTodosSub();
                                                                                                             $re="void "+$id1.text;
                                                                                                             if($formal_paramlist.esVoid==1)
@@ -134,7 +136,7 @@ decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist dec_s_param
 formal_paramlist returns [int esVoid]: '(' nomparamlist ')' {$esVoid=0;}| {$esVoid=1;};
 nomparamlist: IDENT nomparamlistp {mapVarSub.put($IDENT.text,0);};
 nomparamlistp: ',' nomparamlist | ;
-dec_s_paramlist returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist {
+dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist[$id] {
                                                                                                         String tipo=$tipo.s;
                                                                                                         if(($tipo.s).startsWith("char")){
                                                                                                             tipo="char ";
@@ -144,7 +146,18 @@ dec_s_paramlist returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';
                                                                                                         comprobar($IDENT.text);
                                                                                                         if(!($dec_s_paramlist.re).equals("")){
                                                                                                             $re+=','+$dec_s_paramlist.re;
-                                                                                                        }}
+                                                                                                        }
+                                                                                                        if(comprobacionPunteroFunc.get($id) == null){
+                                                                                                            HashMap<String,Boolean> x = new HashMap<String,Boolean>();
+                                                                                                            comprobacionPunteroFunc.put($id, x);
+                                                                                                        }
+                                                                                                        if($tipoparam.c == "*"){
+                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, true);
+                                                                                                        }else{
+                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, true);
+                                                                                                        }
+
+                                                                                                        }
                                                                                                    |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
@@ -190,7 +203,7 @@ proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
 
-codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sent sentlist 'END' 'SUBROUTINE' IDENT;
+codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT ;
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {};
 
 expcond: factorcond expcondp;
