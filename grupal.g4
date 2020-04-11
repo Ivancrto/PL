@@ -87,7 +87,6 @@ WS : [ \r\t\n] -> skip;
 ERRORES: . ;
 
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
 dcllist: dcllistp;
 dcllistp: dcl dcllistp | ;
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
