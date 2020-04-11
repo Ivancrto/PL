@@ -174,7 +174,8 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
                                                                                               }}
                                                                                               |{$re="";} ;
 
-sent: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
+//DE AQUI SOLO ESTÁ HECHO EL CASE ==> FALTA LA PARTE DE LA EXPRESIÓN Y HACER LAS ETIQUETAS (MIRAR EN LAS PRODUCCIONES DE CASI AL FINAL)
+sent returns [String re]: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + "EXPRESION" + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
 
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
 sentpp: 'THEN' sentlist sentp | sent;
@@ -199,9 +200,18 @@ oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^"
 factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
 doval returns [String doVal]: NUM_INT_CONST {$doVal=$NUM_INT_CONST.text;} | IDENT{$doVal=$IDENT.text;};
-casos: 'CASE' casosp | ;
-casosp: '(' etiquetas ')' sentlist casos | 'DEFAULT' sentlist;
-etiquetas: simpvalue etiquetaspp | ':' simpvalue;
-etiquetasp: simpvalue | ;
-etiquetaspp: ':' etiquetasp | listaetiquetas;
-listaetiquetas: ',' simpvalue | ;
+
+//CASOS ESTÁ "INCOMPLETO", HAY QUE HACER LA PARTE DE LAS ETIQUETAS Y SENTLIST
+casos returns [String re=""]: 'CASE' casosp {
+                                            if(($casosp.re).startsWith("default")){
+                                               $re+=$casosp.re;
+                                            }
+                                            else{
+                                            $re="case "+$casosp.re;}
+                                            }
+                                            | {$re+="";};
+casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re +":"+ "VALOR DE SENTLIST" +"\n break; \n"+$casos.re;}| 'DEFAULT' sentlist {$re="default:"+ "VALOR DE SENTLIST";};
+etiquetas returns [String re]: simpvalue etiquetaspp | ':' simpvalue;
+etiquetasp returns [String re]: simpvalue | ;
+etiquetaspp returns [String re]: ':' etiquetasp | listaetiquetas;
+listaetiquetas returns [String re]: ',' simpvalue | ;
