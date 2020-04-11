@@ -154,7 +154,7 @@ dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam 
                                                                                                         if($tipoparam.c == "*"){
                                                                                                               comprobacionPunteroFunc.get($id).put($IDENT.text, true);
                                                                                                         }else{
-                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, true);
+                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, false);
                                                                                                         }
 
                                                                                                         }
