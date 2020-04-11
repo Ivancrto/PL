@@ -141,3 +141,4 @@ etiquetas: simpvalue etiquetaspp | ':' simpvalue;
 etiquetasp: simpvalue | ;
 etiquetaspp: ':' etiquetasp | listaetiquetas;
 listaetiquetas: ',' simpvalue | ;
+
