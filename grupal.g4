@@ -15,16 +15,38 @@ grammar grupal;
     			e.printStackTrace();
     		}
     	}}
+    
+    public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
+    public void comprobar(String id){
+        if(mapVarSub.get(id)==null){
+            System.out.println("La variable "+id+" no coincide con ningun argumento.");
+        }
+        else{
+               if(mapVarSub.get(id)==1){
+                System.out.println("La declaracion de la variable "+id+" se ha repetido.");
+               }
+                mapVarSub.put(id,1);
+        }
+    }
+    public void comprobarTodosSub(){    //Se encarga de comprobar que se han declarado todas las variables
+          if(mapVarSub.containsValue(0)){
+              System.out.println("Hay variables sin declarar.");
+          }
+    }
 }
 @parser::header {
     import java.io.FileWriter;
     import java.io.File;
     import java.io.IOException;
+    import java.util.HashMap;
+
 }
 @lexer::header {
     import java.io.FileWriter;
     import java.io.File;
     import java.io.IOException;
+    import java.util.HashMap;
+
 }
 
 r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
@@ -99,27 +121,59 @@ varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";}; //E
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";}; //Esta puesto la lamda asi debido a que salia null en el codigo.c
 
 //Hecha la parte opcional solo de los IN, OUT, INOUT
-decproc returns [String re]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT {
-                                                                                                            $re="void "+$IDENT.text;
+decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' id2=IDENT {
+                                                                                                            comprobarTodosSub();
+                                                                                                            $re="void "+$id1.text;
                                                                                                             if($formal_paramlist.esVoid==1)
                                                                                                                 $re+="( void )";
                                                                                                             else
                                                                                                                 $re+="("+$dec_s_paramlist.re+")";
                                                                                                             $re+=";\n";
                                                                                                             insertTxtC($re);
+                                                                                                            mapVarSub.clear();
                                                                                                             };
 formal_paramlist returns [int esVoid]: '(' nomparamlist ')' {$esVoid=0;}| {$esVoid=1;};
-nomparamlist: IDENT nomparamlistp;
+nomparamlist: IDENT nomparamlistp {mapVarSub.put($IDENT.text,0);};
 nomparamlistp: ',' nomparamlist | ;
-dec_s_paramlist returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist {$re=$tipo.s + $tipoparam.c+$IDENT.text;
+dec_s_paramlist returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist {
+                                                                                                        String tipo=$tipo.s;
+                                                                                                        if(($tipo.s).startsWith("char")){
+                                                                                                            tipo="char ";
+                                                                                                        }
+                                                                                                        $re=tipo + $tipoparam.c+$IDENT.text;
+                                                                                                        //Comprobamos que las variables se hayan declarado o no estetn repetidas:
+                                                                                                        comprobar($IDENT.text);
                                                                                                         if(!($dec_s_paramlist.re).equals("")){
                                                                                                             $re+=','+$dec_s_paramlist.re;
                                                                                                         }}
                                                                                                    |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
-decfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT ;
-dec_f_paramlist: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 
+
+//Falta comprobar que la ultima sentencia tiene el valor de IDENT
+decfun returns[String re]: 'FUNCTION' id1=IDENT '(' nomparamlist ')' tipo '::' id2=IDENT ';' dec_f_paramlist 'END' 'FUNCTION' id3=IDENT {
+                                                                                                                                    //Por lo que sea, esta sentencia if falla
+                                                                                                                                    if(!($id1.text).equals($id2.text)){
+                                                                                                                                        System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto "+$id2.text+" no coinciden.");
+                                                                                                                                    }
+                                                                                                                                    else{
+                                                                                                                                        $re=$tipo.s+$id1.text+'('+$dec_f_paramlist.re+");\n";
+                                                                                                                                        insertTxtC($re);
+                                                                                                                                    }
+                                                                                                                                    };
+dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist {String corchetes="";
+                                                                                              String tipo=$tipo.s;
+                                                                                              if(($tipo.s).startsWith("char"))
+                                                                                                  corchetes="[]";
+                                                                                                  tipo="char ";
+                                                                                              $re=tipo + $IDENT.text+corchetes;
+                                                                                              //Comprobamos que las variables se hayan declarado o no estetn repetidas:
+                                                                                              comprobar($IDENT.text);
+                                                                                              if(!($dec_f_paramlist.re).equals("")){
+                                                                                                  $re+=','+$dec_f_paramlist.re;
+                                                                                              }}
+                                                                                              |{$re="";} ;
+                                                                                              
 sent: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
 
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
