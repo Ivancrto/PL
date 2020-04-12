@@ -17,7 +17,7 @@ grammar grupal;
     	}}
 
     public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
-    public HashMap<String, HashMap<String,Boolean>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,Boolean>>();
+    public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
     public void comprobar(String id){
         if(mapVarSub.get(id)==null){
             System.out.println("La variable "+id+" no coincide con ningun argumento.");
@@ -148,13 +148,18 @@ dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam 
                                                                                                             $re+=','+$dec_s_paramlist.re;
                                                                                                         }
                                                                                                         if(comprobacionPunteroFunc.get($id) == null){
-                                                                                                            HashMap<String,Boolean> x = new HashMap<String,Boolean>();
+                                                                                                            HashMap<String,String[]> x = new HashMap<String,String[]>();
                                                                                                             comprobacionPunteroFunc.put($id, x);
                                                                                                         }
+                                                                                                        String[] valores = new String[2];
                                                                                                         if($tipoparam.c == "*"){
-                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, true);
+                                                                                                              valores[1] = "puntero";
+                                                                                                              valores[0] = $IDENT.text;
+                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, valores);
                                                                                                         }else{
-                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, false);
+                                                                                                        valores[1] = "no_puntero";
+                                                                                                        valores[0] = $IDENT.text;
+                                                                                                              comprobacionPunteroFunc.get($id).put($IDENT.text, valores);
                                                                                                         }
 
                                                                                                         }
@@ -203,7 +208,9 @@ proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
 
-codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT ;
+codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT {
+    $s = "void " + $IDENT.text +
+};
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {};
 
 expcond: factorcond expcondp;
