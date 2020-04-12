@@ -141,7 +141,7 @@ dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam 
                                                                                                         if(($tipo.s).startsWith("char")){
                                                                                                             tipo="char ";
                                                                                                         }
-                                                                                                        $re=tipo + $tipoparam.c+$IDENT.text;
+                                                                                                        $re=tipo +$IDENT.text;
                                                                                                         //Comprobamos que las variables se hayan declarado o no estetn repetidas:
                                                                                                         comprobar($IDENT.text);
                                                                                                         if(!($dec_s_paramlist.re).equals("")){
@@ -209,11 +209,21 @@ explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {
 proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
-
 codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT {
-    $s = "void " + $IDENT.text ;
+    String t = "void " + $IDENT.text;
+    if($formal_paramlist.esVoid==1){
+      t +="(void)";}
+    else{
+      t += "("+$dec_s_paramlist.re+")";
+    }
+    t += "{ " + "}";
+    System.out.println(t);
 };
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {};
+codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
+    String t = $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" + "{" + "}";
+    System.out.println(t);
+
+};
 
 expcond: factorcond expcondp;
 expcondp: oplog expcond expcondp| ;
