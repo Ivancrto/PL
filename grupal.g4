@@ -40,14 +40,12 @@ grammar grupal;
     import java.io.File;
     import java.io.IOException;
     import java.util.HashMap;
-
 }
 @lexer::header {
     import java.io.FileWriter;
     import java.io.File;
     import java.io.IOException;
     import java.util.HashMap;
-
 }
 
 r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
@@ -192,12 +190,11 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
                                                                                               |{$re="";} ;
 
 //DE AQUI SOLO ESTÁ HECHO EL CASE (Al ejecutrar, en el cuepro de los case está sin hacer porque la produccion de sentlist(en concreto sent) está sin terminar)
-sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " =" + $exp.re + ";\n";}| proc_call ';' {$re = $proc_call.s +";";}| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
-
-sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
-sentpp: 'THEN' sentlist sentp | sent;
-sentppp: 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
-
+sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " =" + $exp.re + ";\n";}| proc_call ';' {$re = $proc_call.s +";";}| 'IF' '(' expcond ')' sentpp | 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
+//NO ESTA TERMINADO, LO TERMINARE (SANDRA)
+sentp returns [String re]: 'ENDIF' {$re = " }";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" +"\t\t" + $sentlist.re +"\n" +"}";};
+sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" +"\t"+ $sentlist.re + $sentp.re +"\n";} | sent {$re = $sent.re;};
+sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "while (" + "expcond" + ")" +"\n" + $sentlist.re;}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text + $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ "\t" + $sentlist.re +"\n"+'}';};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
@@ -226,12 +223,11 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
     String t = $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "}\n";
     insertTxtC(t);
-
 };
 
 
 expcond: factorcond expcondp;
-expcondp: oplog expcond expcondp| ;
+expcondp returns [String s]: oplog expcond expcondp {$s = $oplog.s + $expcondp.s}| ;
 oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^";}| '.NEQV.' {$s="^";};
 factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
