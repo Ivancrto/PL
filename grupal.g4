@@ -89,7 +89,7 @@ ERRORES: . ;
 
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
 
-dcllist returns[String s]: dcllistp {$s = $dcllistp.re + "\n";};
+dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
 dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}| {$re="";};
 cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
 cablist: decproc decsubprog | decfun decsubprog;
@@ -192,7 +192,7 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
                                                                                               |{$re="";} ;
 
 //DE AQUI SOLO ESTÁ HECHO EL CASE (Al ejecutrar, en el cuepro de los case está sin hacer porque la produccion de sentlist(en concreto sent) está sin terminar)
-sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " =" + $exp.re + ";\n";}| proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
+sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " =" + $exp.re + ";\n";}| proc_call ';' {$re = $proc_call.s +";";}| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
 
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
 sentpp: 'THEN' sentlist sentp | sent;
@@ -206,8 +206,8 @@ factor returns [String re]: IDENT factorp {$re=$IDENT.text+$factorp.re;}|simpval
 factorp returns [String re]: '(' exp explist ')' {$re="("+$exp.re+$explist.re+")";}| {$re="";};
 explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {$re="";};
 
-proc_call: 'CALL' IDENT subpparamlist;
-subpparamlist: '(' exp explist ')' | ;
+proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s = $IDENT.text + " " + $subpparamlist.s ;};
+subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
 
 
@@ -224,7 +224,7 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
 
 
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    String t = $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" + "{\n" + "}\n";
+    String t = $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "}\n";
     insertTxtC(t);
 
 };
