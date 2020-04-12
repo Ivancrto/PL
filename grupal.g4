@@ -95,7 +95,7 @@ cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
 cablist: decproc decsubprog | decfun decsubprog;
 decsubprog: decproc decsubprog | decfun decsubprog | ;
 
-sentlist: sent sentlist | ;
+sentlist returns [String re]: sent sentlist {$re=$sent.re+$sentlist.re;}| {$re="";};
 
 //#DEFINE
 dcl  returns[String re]: tipo dclp [$tipo.s]  { };
@@ -191,25 +191,27 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
                                                                                               }}
                                                                                               |{$re="";} ;
 
-//DE AQUI SOLO ESTÁ HECHO EL CASE ==> FALTA LA PARTE DE LA EXPRESIÓN Y HACER LAS ETIQUETAS (MIRAR EN LAS PRODUCCIONES DE CASI AL FINAL)
-sent returns [String re]: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + "EXPRESION" + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
+//DE AQUI SOLO ESTÁ HECHO EL CASE (Al ejecutrar, en el cuepro de los case está sin hacer porque la produccion de sentlist(en concreto sent) está sin terminar)
+sent returns [String re]: IDENT '=' exp ';' | proc_call ';'| 'IF' '(' expcond ')' sentpp| 'DO' sentppp |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
 
 sentp: 'ENDIF' | 'ELSE' sentlist 'ENDIF';
 sentpp: 'THEN' sentlist sentp | sent;
 sentppp: 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
-exp: factor expp ;
-expp:  op exp expp | ;
+
+exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
+expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+$expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
-oparit returns[char c]: '+' {$c='+';} | '-' {$c='-';} | '*' {$c='+';}| '/' {$c='/';};
-factor: IDENT factorp |simpvalue | '('exp')';
-factorp: '(' exp explist ')' | ;
-explist: ',' exp explist | ;
+oparit returns[char c]: '+' {$c='+';} | '-' {$c='-';} | '*' {$c='*';}| '/' {$c='/';};
+factor returns [String re]: IDENT factorp {$re=$IDENT.text+$factorp.re;}|simpvalue {$re=$simpvalue.s;}| '('exp')'{$re="("+$exp.re+")";};
+factorp returns [String re]: '(' exp explist ')' {$re="("+$exp.re+$explist.re+")";}| {$re="";};
+explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {$re="";};
+
 proc_call: 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 subproglist: codproc subproglist {}| codfun subproglist {}| {};
 
 codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT {
-    $s = "void " + $IDENT.text +
+    $s = "void " + $IDENT.text ;
 };
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {};
 
@@ -220,17 +222,18 @@ factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
 doval returns [String doVal]: NUM_INT_CONST {$doVal=$NUM_INT_CONST.text;} | IDENT{$doVal=$IDENT.text;};
 
-//CASOS ESTÁ "INCOMPLETO", HAY QUE HACER LA PARTE DE LAS ETIQUETAS Y SENTLIST
+
+
 casos returns [String re=""]: 'CASE' casosp {
-                                            if(($casosp.re).startsWith("default")){
+                                            if(($casosp.re).startsWith("\t" + "default")){
                                                $re+=$casosp.re;
                                             }
                                             else{
-                                            $re="case "+$casosp.re;}
+                                            $re="\t" + "case " + $casosp.re;}
                                             }
                                             | {$re+="";};
-casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re +":"+ "VALOR DE SENTLIST" +"\n break; \n"+$casos.re;}| 'DEFAULT' sentlist {$re="default:"+ "VALOR DE SENTLIST";};
-etiquetas returns [String re]: simpvalue etiquetaspp | ':' simpvalue;
-etiquetasp returns [String re]: simpvalue | ;
-etiquetaspp returns [String re]: ':' etiquetasp | listaetiquetas;
-listaetiquetas returns [String re]: ',' simpvalue | ;
+casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + "\t\t" + "SENTENCIAS_SENTLIST" + "\n\t\t" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "\t" + "default:" + "\n\t\t" + "SENTENCIAS_SENTLIST";};
+etiquetas returns [String re]: simpvalue etiquetaspp {$re=$etiquetaspp.ant + $simpvalue.s + $etiquetaspp.re;}| ':' simpvalue{$re="<" + $simpvalue.s;};
+etiquetasp returns [String re,String ant]: simpvalue {$re=" to " + $simpvalue.s; $ant="";}| {$re=""; $ant=">";};
+etiquetaspp returns [String re, String ant]: ':' etiquetasp {$re=$etiquetasp.re; $ant=$etiquetasp.ant;}| listaetiquetas{$re=$listaetiquetas.re;$ant="";};
+listaetiquetas returns [String re]: ',' simpvalue {$re=":\n" + "\t" + "case " + $simpvalue.s;}| {$re="";};
