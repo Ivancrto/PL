@@ -192,7 +192,7 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
 //Modificacion case Ana, if, do while Sandra
 sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " =" + $exp.re + ";\n";}| proc_call ';' {$re = $proc_call.s +";";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re; insertTxtC($re);}| 'DO' sentppp {$re = "do {" + $sentppp.re; insertTxtC($re);} |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
 sentp returns [String re]: 'ENDIF' {$re = " }";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" +"\t\t" + $sentlist.re +"\n" +"}";};
-sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" +"\t"+ $sentlist.re + $sentp.re +"\n";} | sent {$re = $sent.re;};
+sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" +"\t"+ $sentlist.re + $sentp.re +"\n";} | sent {$re = "{" + "\n"+$sent.re + "\n}\n";};
 sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n"+ "while (" + "expcond" + ");" +"\n" + $sentlist.re;}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ "\t" + $sentlist.re +"\n"+'}';};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
