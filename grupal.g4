@@ -226,10 +226,11 @@ codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramli
 };
 
 
-expcond returns [String s]: factorcond expcondp {$s = $factorcond.s + $expcondp.s};
-expcondp returns [String s]: oplog expcond expcondp {$s = $oplog.s + $expcond.s + $expcondp.s}| ;
+expcond returns [String s]: factorcond expcondp {$s = $factorcond.s + $expcondp.s;};
+expcondp returns [String s]: oplog expcond expcondp {$s = $oplog.s + $expcond.s + $expcondp.s;}| ;
 oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^";}| '.NEQV.' {$s="^";};
-factorcond returns[String s]: '(' expcond ')' | '.NOT.' factorcond| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
+//Duda en factorcond no se si despues de ! del NOT tiene que haber un igual
+factorcond returns[String s]: '(' expcond ')' {$s = "( "+$expcond.s +" )";}| '.NOT.' factorcond {$s= "!" + $factorcond.s;}| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp ; //falta terminar esta regla
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
 doval returns [String doVal]: NUM_INT_CONST {$doVal=$NUM_INT_CONST.text;} | IDENT{$doVal=$IDENT.text;};
 
