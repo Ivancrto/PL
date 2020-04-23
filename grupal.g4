@@ -85,28 +85,36 @@ WS : [ \r\t\n] -> skip;
 
 ERRORES: . ;
 
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {};
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {insertTxtC($cabecera.re + "\n" +"void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}" + $subproglist.re );};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
 dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}| {$re="";};
-cabecera: 'INTERFACE' cablist 'END' 'INTERFACE' | ;
-cablist: decproc decsubprog | decfun decsubprog;
-decsubprog: decproc decsubprog | decfun decsubprog | ;
 
+cabecera returns[String re]: 'INTERFACE' cablist 'END' 'INTERFACE' {$re=$cablist.re;}| {$re="";};
+
+cablist returns[String re]: decproc decsubprog {$re=$decproc.re + $decsubprog.re;}| decfun decsubprog {$re=$decfun.re + $decsubprog.re;};
+
+decsubprog returns[String re]: decproc decsubprog {$re=$decproc.re + $decsubprog.re;}| decfun decsubprog {$re=$decfun.re + $decsubprog.re;}| {$re="";};
 sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re="";};
 
 //#DEFINE
-dcl  returns[String re]: tipo dclp [$tipo.s]  {$re=$tipo.s  + " " + $dclp.re;};
-dclp [String h] returns[String re]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
+dcl  returns[String re]: tipo dclp [$tipo.s]  {$re=$dclp.re;};
+dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
                         String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
                         String[] parts = define.split(",");
                         for(String i:parts){
                             insertTxtC("#define "+ $h + i + ";\n");
+                            $re+="#define "+ $h + i + ";\n";
                         }
+                        $re+=$defcte.re;
                    } //es de tipo define
 
-                                        | '::' varlist ';' defvar {$re=  $varlist.s+";\n"+$defvar.re+"\n";}| {$re="";}; //NO ES de tipo define
-defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {insertTxtC("#define " + $tipo.s + $IDENT.text + " " + $simpvalue.s +";\n");   }| {$re="";}  ;
+                                        | '::' varlist ';' defvar {$re=  $h +  " " + $varlist.s + ";\n" + $defvar.re + "\n";}| {$re="";}; //NO ES de tipo define
+defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {
+                       $re= "#define " + $tipo.s + $IDENT.text + " " + $simpvalue.s + ";\n" +$defcte.re;
+                       insertTxtC("#define " + $tipo.s + $IDENT.text + " " + $simpvalue.s +";\n");
+                        }
+                       | {$re="";} ;
 
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+ " " +$simpvalue.s+$ctelist.re;}| {$re="";} ;
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
@@ -114,10 +122,10 @@ simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_
 defvar returns [String re]: tipo '::' varlist ';' defvar {$re = $tipo.s + $varlist.s + ";";
                                                             insertTxtC($tipo.s + $varlist.s + ";\n");}| {$re="";} ;
 tipo returns[String s]: 'INTEGER' {$s="int ";}| 'REAL' {$s="float ";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
-charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| ;
+charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| {$s="";};
 varlist returns [String s]: IDENT init varlistp{$s = $IDENT.text + $init.s + $varlistp.s;};
-varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";}; //Esta puesto la lamda asi debido a que sino salia null en el codigo.c
-init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";}; //Esta puesto la lamda asi debido a que salia null en el codigo.c
+varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";};
+init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
 //Hecha la parte opcional solo de los IN, OUT, INOUT
 decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {
@@ -203,8 +211,9 @@ factorp returns [String re]: '(' exp explist ')' {$re="("+$exp.re+$explist.re+")
 explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {$re="";};
 
 proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s = $IDENT.text + " " + $subpparamlist.s ;};
-subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | ;
-subproglist: codproc subproglist {}| codfun subproglist {}| {};
+subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | {$s="";};
+
+subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subproglist.re;}| codfun subproglist {$re= $codfun.s + $subproglist.re;}| {$re="";};
 
 
 codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$IDENT.text]  dcllist sent sentlist 'END' 'SUBROUTINE' IDENT {
@@ -215,13 +224,14 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
       t += "("+$dec_s_paramlist.re+")";
     }
     t += "{\n"+ $dcllist.s+ $sent.re+ $sentlist.re +"}\n";
-    insertTxtC(t);
+    $s=t;
+    insertTxtC($s);
 };
 
 
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    String t = $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "}\n";
-    insertTxtC(t);
+codfun returns[String s]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
+    $s= $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "}\n";
+    insertTxtC($s);
 };
 
 //Modificado
