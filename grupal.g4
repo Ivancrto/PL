@@ -38,17 +38,24 @@ grammar grupal;
 //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
 	    public String strConstComillas(String sConst){
 			String[] split;
-			boolean
 	    	if(sConst.contains ("+")){
 				split = sConst.split ("\\+");
+                for(int i=0; i<split.length;i++){
+                    if(i!=0){
+                        split[i]=split[i].substring (1,(split[i].length ()-1));
+                    }
+                    else{
+                        split[i]=split[i].substring (0,(split[i].length ()-1));
+                     }
+                }
 			}
 			else{
 				split = new String[]{sConst};
 			}
             for(int i=0; i<split.length;i++){
                 split[i]="\""+((split[i].substring (1,(split[i].length ()-1))).replaceAll("\"","\\\\\""))+"\"";
-                if(i!=split.length-1){
-                    split[0]= split[0] + "+" +split[i];
+                if((i!=split.length-1)&&(i!=0)){
+                    split[0]= split[0] + " + " +split[i];
                 }
 
             }
