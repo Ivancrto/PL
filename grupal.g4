@@ -34,6 +34,26 @@ grammar grupal;
               System.out.println("Hay variables sin declarar.");
           }
     }
+    
+//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
+	    public String strConstComillas(String sConst){
+			String[] split;
+			boolean
+	    	if(sConst.contains ("+")){
+				split = sConst.split ("\\+");
+			}
+			else{
+				split = new String[]{sConst};
+			}
+            for(int i=0; i<split.length;i++){
+                split[i]="\""+((split[i].substring (1,(split[i].length ()-1))).replaceAll("\"","\\\\\""))+"\"";
+                if(i!=split.length-1){
+                    split[0]= split[0] + "+" +split[i];
+                }
+
+            }
+            return  split[0];
+	    }
 }
 @parser::header {
     import java.io.FileWriter;
@@ -98,7 +118,7 @@ decsubprog returns[String re]: decproc decsubprog {$re=$decproc.re + $decsubprog
 sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re="";};
 
 //#DEFINE
-dcl  returns[String re]: tipo dclp [$tipo.s]  {$re=$dclp.re;};
+dcl  returns[String re]: tipo dclp [$tipo.t]  {$re=$dclp.re;};
 dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
                         String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
                         String[] parts = define.split(",");
@@ -109,7 +129,7 @@ dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue 
                         $re= $defcte.re + $re ;
                    } //es de tipo define
 
-                                        | '::' varlist ';' defvar {$re= "\t" + $h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
+                                        | '::' varlist[""] ';' defvar {$re= "\t" + $h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
 defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {
                        $re= "";
                        insertTxtC("#define "  + $IDENT.text + " " + $simpvalue.s +";\n");
@@ -117,16 +137,16 @@ defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelis
                        | {$re="";} ;
 
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+ " " +$simpvalue.s+$ctelist.re;}| {$re="";} ;
-simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= $STRING_CONST.text;}
+simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= strConstComillas($STRING_CONST.text);}
                 |NUM_INT_CONST_B {$s= "0b" + $NUM_INT_CONST_B.text.substring(2,$NUM_INT_CONST_B.text.length()-1)  ;} | NUM_INT_CONST_O {$s= "0o" + $NUM_INT_CONST_O.text.substring(2,$NUM_INT_CONST_O.text.length()-1)  ;}| NUM_INT_CONST_H {$s= "0x" + $NUM_INT_CONST_H.text.substring(2,$NUM_INT_CONST_H.text.length()-1)  ;};
-defvar returns [String re]: tipo '::' varlist ';' defvar {$re = "\t" + $tipo.s + $varlist.s + ";\n";
-                                                            //insertTxtC($tipo.s + $varlist.s + ";\n");
+defvar returns [String re]: tipo '::' varlist[$tipo.cl] ';' defvar {$re = "\t" + $tipo.t + $varlist.s + ";\n" + $defvar.re;
+                                                            //insertTxtC($tipo.t + $varlist.s + ";\n");
                                                             }
                                                             | {$re="";} ;
-tipo returns[String s]: 'INTEGER' {$s="int ";}| 'REAL' {$s="float ";}| 'CHARACTER' charlength {$s= "char " + $charlength.s ;};
+tipo returns[String t, String cl]: 'INTEGER' {$t="int "; $cl="";}| 'REAL' {$t="float "; $cl="";}| 'CHARACTER' charlength {$t= "char "; $cl=$charlength.s;};
 charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| {$s="";};
-varlist returns [String s]: IDENT init varlistp{$s = $IDENT.text + $init.s + $varlistp.s;};
-varlistp returns [String s]: ',' varlist {$s= ", " + $varlist.s;}| {$s="";};
+varlist [String cl] returns [String s]: IDENT init varlistp[$cl]{$s = $IDENT.text+ $cl + $init.s + $varlistp.s;};
+varlistp [String cl]returns [String s]: ',' varlist[$cl] {$s= ", " + $varlist.s;}| {$s="";};
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
 //Hecha la parte opcional solo de los IN, OUT, INOUT
@@ -145,8 +165,8 @@ formal_paramlist returns [int esVoid]: '(' nomparamlist ')' {$esVoid=0;}| {$esVo
 nomparamlist: IDENT nomparamlistp {mapVarSub.put($IDENT.text,0);};
 nomparamlistp: ',' nomparamlist | ;
 dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist[$id] {
-                                                                                                        String tipo=$tipo.s;
-                                                                                                        if(($tipo.s).startsWith("char")){
+                                                                                                        String tipo=$tipo.t;
+                                                                                                        if(($tipo.t).startsWith("char")){
                                                                                                             tipo="char ";
                                                                                                         }
                                                                                                         $re=tipo+ $tipoparam.c +$IDENT.text;
@@ -182,13 +202,13 @@ decfun returns[String re]: 'FUNCTION' id1=IDENT '(' nomparamlist ')' tipo '::' i
                                                                                                                                         System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto "+$id2.text+" no coinciden.");
                                                                                                                                     }
                                                                                                                                     else{
-                                                                                                                                        $re=$tipo.s+$id1.text+'('+$dec_f_paramlist.re+");\n";
+                                                                                                                                        $re=$tipo.t+$id1.text+'('+$dec_f_paramlist.re+");\n";
                                                                                                                                         //insertTxtC($re);
                                                                                                                                     }
                                                                                                                                     };
 dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist {String corchetes="";
-                                                                                              String tipo=$tipo.s;
-                                                                                              if(($tipo.s).startsWith("char"))
+                                                                                              String tipo=$tipo.t;
+                                                                                              if(($tipo.t).startsWith("char"))
                                                                                                   corchetes="[]";
                                                                                                   tipo="char ";
                                                                                               $re=tipo + $IDENT.text+corchetes;
@@ -216,8 +236,8 @@ factor returns [String re]: IDENT factorp {$re=$IDENT.text+$factorp.re;}|simpval
 factorp returns [String re]: '(' exp explist ')' {$re="("+$exp.re+$explist.re+")";}| {$re="";};
 explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {$re="";};
 
-proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s = $IDENT.text + " " + $subpparamlist.s ;};
-subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | {$s="";};
+proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s = $IDENT.text + $subpparamlist.s ;};
+subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | {$s="()";};
 
 subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subproglist.re;}| codfun subproglist {$re= $codfun.s + $subproglist.re;}| {$re="";};
 
@@ -234,9 +254,9 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
     //insertTxtC($s);
 };
 
-
+//AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
 codfun returns[String s]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    $s= $tipo.s + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "}\n";
+    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "\t" + "return " + $exp.re + "\n}\n";
     //insertTxtC($s);
 };
 
