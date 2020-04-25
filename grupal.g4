@@ -34,33 +34,52 @@ grammar grupal;
               System.out.println("Hay variables sin declarar.");
           }
     }
-    
-//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-	    public String strConstComillas(String sConst){
-			String[] split;
-	    	if(sConst.contains ("+")){
-				split = sConst.split ("\\+");
-                for(int i=0; i<split.length;i++){
-                    if(i!=0){
-                        split[i]=split[i].substring (1,(split[i].length ()-1));
-                    }
-                    else{
-                        split[i]=split[i].substring (0,(split[i].length ()-1));
-                     }
-                }
-			}
-			else{
-				split = new String[]{sConst};
-			}
-            for(int i=0; i<split.length;i++){
-                split[i]="\""+((split[i].substring (1,(split[i].length ()-1))).replaceAll("\"","\\\\\""))+"\"";
-                if((i!=split.length-1)&&(i!=0)){
-                    split[0]= split[0] + " + " +split[i];
-                }
 
-            }
-            return  split[0];
-	    }
+//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
+  public String strConstComillas(String sConst){
+	         	         			    String cadenaCorrecta = "";
+	         	         			    String s = sConst;
+	         	         			    if(sConst.contains ("+")){
+	         	         			     String[] separacion = sConst.split("\\+");
+	         	         			     int ind = 0;
+	         	         	            		    for(String i: separacion){
+	         	         	            		       if(i.charAt(i.length()-1)==' ' && i.charAt(0)==' '){
+	         	         	                               i = i.substring(1, i.length()-1);
+	         	         	            		       }else if(i.charAt(0)==' '){
+	         	         	            		           i = i.substring(1, i.length());
+	         	         	            		       }else if(i.charAt(i.length()-1)==' '){
+	         	         	            		          i = i.substring(0, i.length()-1);
+	         	         	            		       }
+	         	         	            		       if(i.substring(1, i.length()-1).contains("\"")){
+
+	         	         								   i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
+	         	         								   if(ind == separacion.length-1){
+	         												   cadenaCorrecta += "\"" + i + "\"";
+	         											   }else{
+	         												   cadenaCorrecta += "\"" + i + "\" + ";
+	         											   }
+	         	         							   }else{
+
+	         											   if(i.charAt(0)=='\''){
+	         												 i = "\"" +  i.substring(1, i.length()-1) +  "\"";
+	         											   }
+	         											   if(ind == separacion.length-1){
+	         												   cadenaCorrecta +=   i;
+	         											   }else{
+	         												   cadenaCorrecta +=  i + " + ";
+	         											   }
+	         	         	            		       }
+	         	         	            		       ind++;
+	         	         	            		    }
+	         	         	            		    return cadenaCorrecta;
+	         	         			    }
+	         	         			   else{
+	         	         			       cadenaCorrecta = "\"" + s.substring(1, s.length()-1).replaceAll("\"", "\\\\\"") + "\"";
+	         	         			       return cadenaCorrecta;
+	         	         			   }
+
+	         	         		    }
+
 }
 @parser::header {
     import java.io.FileWriter;
@@ -127,19 +146,22 @@ sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re
 //#DEFINE
 dcl  returns[String re]: tipo dclp [$tipo.t]  {$re=$dclp.re;};
 dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
-                        String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
-                        String[] parts = define.split(",");
-                        for(String i:parts){
-                           insertTxtC("#define " + i + ";\n");
-                           //$re+="#define " + i + ";\n";
-                        }
-                        $re= $defcte.re + $re ;
+                         String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
+                                                 String[] parts = define.split(",");
+                          for(String i:parts){
+                                                   insertTxtC("#define " + i + ";\n");
+                                               //   $re+="#define " + i + ";\n" + $defcte.re;
+                                                }
+
+                                                //$re= $defcte.re + $re ;
+                                                insertTxtC($defcte.re);
                    } //es de tipo define
 
                                         | '::' varlist[""] ';' defvar {$re= "\t" + $h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
 defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {
                        $re= "";
-                       insertTxtC("#define "  + $IDENT.text + " " + $simpvalue.s +";\n");
+                       $re+="#define "  + $IDENT.text + " " + $simpvalue.s +";\n" + $defcte.re;
+                       //insertTxtC("#define "  + $IDENT.text + " " + $simpvalue.s +";\n");
                         }
                        | {$re="";} ;
 
