@@ -2,6 +2,19 @@
 
 grammar grupal;
 
+@parser::header {
+    import java.io.FileWriter;
+    import java.io.File;
+    import java.io.IOException;
+    import java.util.HashMap;
+}
+@lexer::header {
+    import java.io.FileWriter;
+    import java.io.File;
+    import java.io.IOException;
+    import java.util.HashMap;
+}
+
 @members {
      File file = new File("codigo.c");
      FileWriter fr;
@@ -81,21 +94,8 @@ grammar grupal;
 	         	         		    }
 
 }
-@parser::header {
-    import java.io.FileWriter;
-    import java.io.File;
-    import java.io.IOException;
-    import java.util.HashMap;
-}
-@lexer::header {
-    import java.io.FileWriter;
-    import java.io.File;
-    import java.io.IOException;
-    import java.util.HashMap;
-}
 
-r:(IDENT|ENTRECOMILLADOS|COMMENT | NUM_REAL_CONST | NUM_INT_CONST | NUM_INT_CONST_B |
-        NUM_INT_CONST_O | NUM_INT_CONST_H  | STRING_CONST | ERRORES)+;
+
 
 //ELEMENTOS ENTRECOMILLADOS
 
@@ -131,6 +131,7 @@ WS : [ \r\t\n] -> skip;
 
 ERRORES: . ;
 
+//GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {insertTxtC("\n" + $cabecera.re + "\n" +$subproglist.re  + "\n" +"void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n");};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
@@ -146,22 +147,21 @@ sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re
 //#DEFINE
 dcl  returns[String re]: tipo dclp [$tipo.t]  {$re=$dclp.re;};
 dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte {
-                         String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
-                                                 String[] parts = define.split(",");
-                          for(String i:parts){
-                                                   insertTxtC("#define " + i + ";\n");
-                                               //   $re+="#define " + i + ";\n" + $defcte.re;
-                                                }
-
-                                                //$re= $defcte.re + $re ;
-                                                insertTxtC($defcte.re);
-                   } //es de tipo define
+                                            String define = $IDENT.text+ " " +$simpvalue.s +" "+$ctelist.re;
+                                            String[] parts = define.split(",");
+                                            for(String i:parts){
+                                               insertTxtC("#define " + i + "\n");
+                                           //   $re+="#define " + i + "\n" + $defcte.re;
+                                            }
+                                            //$re= $defcte.re + $re ;
+                                            insertTxtC($defcte.re);
+                                        } //es de tipo define
 
                                         | '::' varlist[""] ';' defvar {$re= "\t" + $h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
 defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {
-                       $re= "";
-                       $re+="#define "  + $IDENT.text + " " + $simpvalue.s +";\n" + $defcte.re;
-                       //insertTxtC("#define "  + $IDENT.text + " " + $simpvalue.s +";\n");
+                        $re= "";
+                        $re+="#define "  + $IDENT.text + " " + $simpvalue.s +"\n" + $defcte.re;
+                        //insertTxtC("#define "  + $IDENT.text + " " + $simpvalue.s +"\n");
                         }
                        | {$re="";} ;
 
@@ -237,10 +237,11 @@ decfun returns[String re]: 'FUNCTION' id1=IDENT '(' nomparamlist ')' tipo '::' i
                                                                                                                                     };
 dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist {String corchetes="";
                                                                                               String tipo=$tipo.t;
-                                                                                              if(($tipo.t).startsWith("char"))
+                                                                                              if(($tipo.t).startsWith("char")){
                                                                                                   corchetes="[]";
                                                                                                   tipo="char ";
-                                                                                              $re=tipo + $IDENT.text+corchetes;
+                                                                                              }
+                                                                                               $re=tipo + $IDENT.text+corchetes;
                                                                                               //Comprobamos que las variables se hayan declarado o no estetn repetidas:
                                                                                               comprobar($IDENT.text);
                                                                                               if(!($dec_f_paramlist.re).equals("")){
@@ -285,7 +286,7 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
 
 //AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
 codfun returns[String s]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "\t" + "return " + $exp.re + "\n}\n";
+    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "\t" + "return " + $exp.re + ";\n}\n";
     //insertTxtC($s);
 };
 
