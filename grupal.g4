@@ -251,13 +251,19 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
 
 //Modificacion case Ana, if, do while Sandra
 sent returns [String re]: IDENT '=' exp ';' {$re = "\t"+ $IDENT.text + " = " + $exp.re + ";\n";}
-                | proc_call ';' {$re = "\t"+ $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re; insertTxtC($re);}
-                | 'DO' sentppp {$re = "do {" + $sentppp.re; insertTxtC($re);}
-                |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;  insertTxtC($re);};
+                | proc_call ';' {$re = "\t"+ $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re;
+                //insertTxtC($re);
+                }
+                | 'DO' sentppp {$re = $sentppp.re; // "do {" +
+                //insertTxtC($re);
+                }
+                |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;
+                //insertTxtC($re);
+                };
 
 sentp returns [String re]: 'ENDIF' {$re = " }";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" +"\t\t" + $sentlist.re +"\n" +"}\n";};
 sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" +"\t"+ $sentlist.re + $sentp.re +"\n";} | sent {$re = "{" + "\n"+$sent.re + "\n}\n";};
-sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n"+ "while (" + "expcond" + ");" +"\n" + $sentlist.re;}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ "\t" + $sentlist.re +"\n"+'}';};
+sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n"+ "while (" + $expcond.s + "){" +"\n" + $sentlist.re +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ "\t" + $sentlist.re +"\n"+'}';};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
@@ -295,7 +301,7 @@ expcond returns [String s]: factorcond expcondp {$s = $factorcond.s + $expcondp.
 expcondp returns [String s]: oplog expcond expcondp {$s = $oplog.s + $expcond.s + $expcondp.s;}| {$s="";};
 oplog returns[String s]: '.OR.' {$s="||";}| '.AND.' {$s="&&";}| '.EQV.' {$s="!^";}| '.NEQV.' {$s="^";};
 //Duda en factorcond no se si despues de ! del NOT tiene que haber un igual
-factorcond returns[String s]: '(' expcond ')' {$s = "("+$expcond.s +")";}| '.NOT.' factorcond {$s= "!" + $factorcond.s;}| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp opcomp exp {$s= $exp.re + $opcomp.s + $exp.re;};
+factorcond returns[String s]: '(' expcond ')' {$s = "("+$expcond.s +")";}| '.NOT.' factorcond {$s= "!" + $factorcond.s;}| '.TRUE.' {$s="1";}| '.FALSE.' {$s="0";}| exp {$s = $exp.re;} opcomp exp {$s +=$opcomp.s + $exp.re;};
 opcomp returns[String s]: '<' {$s="<";}| '>' {$s=">";}| '<=' {$s="<=";}| '>=' {$s=">=";}| '==' {$s="==";}| '/=' {$s="!=";};
 doval returns [String doVal]: NUM_INT_CONST {$doVal=$NUM_INT_CONST.text;} | IDENT{$doVal=$IDENT.text;};
 
