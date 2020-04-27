@@ -64,7 +64,6 @@ grammar grupal;
 	         	         	            		          i = i.substring(0, i.length()-1);
 	         	         	            		       }
 	         	         	            		       if(i.substring(1, i.length()-1).contains("\"")){
-
 	         	         								   i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
 	         	         								   if(ind == separacion.length-1){
 	         												   cadenaCorrecta += "\"" + i + "\"";
@@ -72,7 +71,6 @@ grammar grupal;
 	         												   cadenaCorrecta += "\"" + i + "\" + ";
 	         											   }
 	         	         							   }else{
-
 	         											   if(i.charAt(0)=='\''){
 	         												 i = "\"" +  i.substring(1, i.length()-1) +  "\"";
 	         											   }
@@ -96,36 +94,38 @@ grammar grupal;
 //Metodo para tabular todo el String que reciba
     public String tabulacion(String t) {
         int cont = 0;
-        String tab = "";
-        String final = "";
+        String fin= "";
         String [] lineas = t.split("\n");
-    for(String linea: lineas){
-        //Si contiene { la siguiente linea tendra la tabulación
-        if(linea.contains("{")){
-		for (int i =0; i<cont; i++){
-			tab+= "\t"
+        for(String linea: lineas){
+            //Si contiene { la siguiente linea tendra la tabulación
+            if(linea.contains("{")){
+                String t1="";
+		        for (int i=0; i<cont; i++){
+			        t1+= "\t";
+                    }
+                    cont= cont+1;
+                    fin=fin + (t1 + linea+"\n");
+	        }
+            //Si contiene }, esa misma linea se le quita una tabulación
+	        if(linea.contains("}")){
+	            String t2="";
+		        cont = cont-1;
+		        for (int i =0; i<cont; i++){
+			        t2+= "\t";
                 }
-                cont= cont+1;
-                final=final + (tab + linea+"\n");
-	}
-        //Si contiene }, esa misma linea se le quita una tabulación
-	if(linea.contains("}"){
-		cont = cont-1;
-		for (int i =0; i<cont; i++){
-			tab+= "\t"
+		        fin = fin + (t2 + linea + "\n");
+	        }
+            //Las demas lineas
+	        else{
+	            String t3="";
+		        for (int i =0; i<cont; i++){
+			        t3+= "\t";
                 }
-		final = final + (tab + linea + "\n");
-	}
-        //Las demas lineas
-	else{
-		for (int i =0; i<cont; i++){
-			tab+= "\t"
-                }
-		final = final + (tab + linea + "\n");
-	}
-    }//Fin del for lineas
-    return(final);
-}//Fin metodo tabular
+		        fin = fin + (t3 + linea + "\n");
+	        }
+        }//Fin del for lineas
+        return(fin);
+    }//Fin metodo tabular
 
 }
 
@@ -286,7 +286,7 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
 
 //Modificacion case Ana, if, do while Sandra
 sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " = " + $exp.re + ";\n";}
-                | proc_call ';' {$re = "\t"+ $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re;
+                | proc_call ';' {$re =  $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re;
                 //insertTxtC($re);
                 }
                 | 'DO' sentppp {$re = $sentppp.re; // "do {" +
@@ -327,7 +327,7 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
 
 //AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
 codfun returns[String s]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "\t" + "return " + $exp.re + ";\n}\n";
+    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "return " + $exp.re + ";\n}\n";
     //insertTxtC($s);
 };
 
