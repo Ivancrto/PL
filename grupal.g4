@@ -189,7 +189,7 @@ dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue 
                                            //   $re+="#define " + i + "\n" + $defcte.re;
                                             }
                                             //$re= $defcte.re + $re ;
-                                           \t insertTxtC($defcte.re);
+                                           insertTxtC($defcte.re);
                                         } //es de tipo define
 
                                         | '::' varlist[""] ';' defvar {$re=$h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
