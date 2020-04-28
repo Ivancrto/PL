@@ -64,6 +64,7 @@ grammar grupal;
 	         	         	            		          i = i.substring(0, i.length()-1);
 	         	         	            		       }
 	         	         	            		       if(i.substring(1, i.length()-1).contains("\"")){
+
 	         	         								   i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
 	         	         								   if(ind == separacion.length-1){
 	         												   cadenaCorrecta += "\"" + i + "\"";
@@ -71,6 +72,7 @@ grammar grupal;
 	         												   cadenaCorrecta += "\"" + i + "\" + ";
 	         											   }
 	         	         							   }else{
+
 	         											   if(i.charAt(0)=='\''){
 	         												 i = "\"" +  i.substring(1, i.length()-1) +  "\"";
 	         											   }
@@ -91,42 +93,15 @@ grammar grupal;
 
 	         	         		    }
 
-//Metodo para tabular todo el String que reciba
-    public String tabulacion(String t) {
-        int cont = 0;
-        String fin= "";
-        String [] lineas = t.split("\n");
-        for(String linea: lineas){
-            //Si contiene { la siguiente linea tendra la tabulación
-            if(linea.contains("{")){
-                String t1="";
-		        for (int i=0; i<cont; i++){
-			        t1+= "\t";
+	            public String tabulacion(String t) {
+                    int cont = 0;
+                    String fin= "";
+                    String [] lineas = t.split("\n");
+                    for(String linea: lineas){
+                     fin += "\t" + linea + "\n";
                     }
-                    cont= cont+1;
-                    fin=fin + (t1 + linea+"\n");
-	        }
-            //Si contiene }, esa misma linea se le quita una tabulación
-	        if(linea.contains("}")){
-	            String t2="";
-		        cont = cont-1;
-		        for (int i =0; i<cont; i++){
-			        t2+= "\t";
-                }
-		        fin = fin + (t2 + linea + "\n");
-	        }
-            //Las demas lineas
-	        else{
-	            String t3="";
-		        for (int i =0; i<cont; i++){
-			        t3+= "\t";
-                }
-		        fin = fin + (t3 + linea + "\n");
-	        }
-        }//Fin del for lineas
-        return(fin);
-    }//Fin metodo tabular
-
+                    return fin;
+}
 }
 
 
@@ -166,8 +141,7 @@ WS : [ \r\t\n] -> skip;
 ERRORES: . ;
 
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {String f ="\n" + $cabecera.re + "\n" +$subproglist.re  + "\n" +"void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n";
-												insertTxtC(tabulacion(f));};
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {insertTxtC("\n" + $cabecera.re + "\n" +$subproglist.re  + "\n" +"void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n");};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
 dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}| {$re="";};
@@ -189,10 +163,10 @@ dclp [String h] returns[String re=""]: ',' 'PARAMETER' '::' IDENT '=' simpvalue 
                                            //   $re+="#define " + i + "\n" + $defcte.re;
                                             }
                                             //$re= $defcte.re + $re ;
-                                           insertTxtC($defcte.re);
+                                            insertTxtC($defcte.re);
                                         } //es de tipo define
 
-                                        | '::' varlist[""] ';' defvar {$re=$h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
+                                        | '::' varlist[""] ';' defvar {$re= "\t" + $h +  " " + $varlist.s + ";\n" + $defvar.re + "";}| {$re="";}; //NO ES de tipo define
 defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' defcte  {
                         $re= "";
                         $re+="#define "  + $IDENT.text + " " + $simpvalue.s +"\n" + $defcte.re;
@@ -203,7 +177,7 @@ defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelis
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+ " " +$simpvalue.s+$ctelist.re;}| {$re="";} ;
 simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= strConstComillas($STRING_CONST.text);}
                 |NUM_INT_CONST_B {$s= "0b" + $NUM_INT_CONST_B.text.substring(2,$NUM_INT_CONST_B.text.length()-1)  ;} | NUM_INT_CONST_O {$s= "0o" + $NUM_INT_CONST_O.text.substring(2,$NUM_INT_CONST_O.text.length()-1)  ;}| NUM_INT_CONST_H {$s= "0x" + $NUM_INT_CONST_H.text.substring(2,$NUM_INT_CONST_H.text.length()-1)  ;};
-defvar returns [String re]: tipo '::' varlist[$tipo.cl] ';' defvar {$re =  $tipo.t + $varlist.s + ";\n" + $defvar.re;
+defvar returns [String re]: tipo '::' varlist[$tipo.cl] ';' defvar {$re = "\t" + $tipo.t + $varlist.s + ";\n" + $defvar.re;
                                                             //insertTxtC($tipo.t + $varlist.s + ";\n");
                                                             }
                                                             | {$re="";} ;
@@ -285,8 +259,8 @@ dec_f_paramlist returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec
                                                                                               |{$re="";} ;
 
 //Modificacion case Ana, if, do while Sandra
-sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " = " + $exp.re + ";\n";}
-                | proc_call ';' {$re =  $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + $sentpp.re;
+sent returns [String re]: IDENT '=' exp ';' {$re = "\t"+ $IDENT.text + " = " + $exp.re + ";\n";}
+                | proc_call ';' {$re = "\t"+ $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "\t"+"if (" + $expcond.s + ")" + tabulacion($sentpp.re);
                 //insertTxtC($re);
                 }
                 | 'DO' sentppp {$re = $sentppp.re; // "do {" +
@@ -296,9 +270,9 @@ sent returns [String re]: IDENT '=' exp ';' {$re = $IDENT.text + " = " + $exp.re
                 //insertTxtC($re);
                 };
 
-sentp returns [String re]: 'ENDIF' {$re = " }";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" + $sentlist.re +"\n" +"}\n";};
-sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" + $sentlist.re + $sentp.re +"\n";} | sent {$re = "{" + "\n"+$sent.re + "\n}\n";};
-sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n"+ "while (" + $expcond.s + "){" +"\n" + $sentlist.re +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ $sentlist.re +"\n"+'}';};
+sentp returns [String re]: 'ENDIF' {$re = " }";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" +"\t\t" + $sentlist.re +"\n" +"}\n";};
+sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" +"\t"+ $sentlist.re + $sentp.re +"\n";} | sent {$re = "{" + "\n"+$sent.re + "\n}\n";};
+sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n"+ "\t" +"while (" + $expcond.s + "){" +"\n"  + tabulacion($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ "\t" + $sentlist.re +"\n"+'}';};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
@@ -327,7 +301,7 @@ codproc returns[String s]: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[$
 
 //AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
 codfun returns[String s]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::'  IDENT ';' dec_f_paramlist dcllist sent sentlist  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT {
-    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "return " + $exp.re + ";\n}\n";
+    $s= $tipo.t + $IDENT.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "\t" + "return " + $exp.re + ";\n}\n";
     //insertTxtC($s);
 };
 
@@ -350,8 +324,8 @@ casos returns [String re=""]: 'CASE' casosp {
                                             $re="\t" + "case " + $casosp.re;}
                                             }
                                             | {$re+="";};
-casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + "SENTENCIAS_SENTLIST" + "\n" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "default:" + "\n" + "SENTENCIAS_SENTLIST";};
+casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + "\t\t" + "SENTENCIAS_SENTLIST" + "\n\t\t" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "\t" + "default:" + "\n\t\t" + "SENTENCIAS_SENTLIST";};
 etiquetas returns [String re]: simpvalue etiquetaspp {$re=$etiquetaspp.ant + $simpvalue.s + $etiquetaspp.re;}| ':' simpvalue{$re="<" + $simpvalue.s;};
 etiquetasp returns [String re,String ant]: simpvalue {$re=" to " + $simpvalue.s; $ant="";}| {$re=""; $ant=">";};
 etiquetaspp returns [String re, String ant]: ':' etiquetasp {$re=$etiquetasp.re; $ant=$etiquetasp.ant;}| listaetiquetas{$re=$listaetiquetas.re;$ant="";};
-listaetiquetas returns [String re]: ',' simpvalue {$re=":\n" + "case " + $simpvalue.s;}| {$re="";};
+listaetiquetas returns [String re]: ',' simpvalue {$re=":\n" + "\t" + "case " + $simpvalue.s;}| {$re="";};
