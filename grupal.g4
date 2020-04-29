@@ -287,7 +287,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
                 //insertTxtC($re);
                 };
 
-sentp returns [String re]: 'ENDIF' {$re = "\n}\n";}| 'ELSE' sentlist 'ENDIF' {$re = "else {\n" + $sentlist.re +"\n" +"}\n";};
+sentp returns [String re]: 'ENDIF' {$re = "\n}\n";}| 'ELSE' sentlist 'ENDIF' {$re = "}\nelse {\n" + $sentlist.re +"\n" +"}\n";};
 sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" + $sentlist.re + $sentp.re;} | sent {$re = "{" + "\n"+$sent.re+"\n}\n";};
 sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ $sentlist.re +"\n"+'}';};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
