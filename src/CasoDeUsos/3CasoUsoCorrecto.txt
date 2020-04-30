@@ -1,0 +1,57 @@
+!------------------------------------
+! Tercer ejemplo de caso de uso correcto
+!------------------------------------
+PROGRAM ThirdProgram ;
+
+INTERFACE
+   SUBROUTINE Subrutina0Param
+   END SUBROUTINE Subrutina0Param
+
+   FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 )
+      REAL :: Funcion2Param ;
+      INTEGER , INTENT ( IN ) Fun2Param1 ;
+      CHARACTER (25) , INTENT ( IN ) Fun2Param2 ;
+   END FUNCTION IDENT
+END INTERFACE
+
+CALL Subrutina0Param ;
+
+END PROGRAM ThirdProgram
+
+SUBROUTINE Subrutina0Param
+
+   INTEGER :: i1, i2=0, i3 ;
+
+   IF ( .TRUE. ) CALL Subrutina0Param;
+   IF ( .FALSE. ) CALL Subrutina0Param;
+   IF ( a == b ) CALL Subrutina0Param;
+
+   IF ( .NOT. ( .FALSE. .OR. a<=b) .AND. (b>=c .AND. c/=d) ) THEN
+      CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+      IF ( .TRUE. ) CALL Subrutina0Param;
+      concatenacionStrings = 'comilla doble " dentro' + "comilla simple  dentro";
+   ELSE
+      CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+      IF ( .TRUE. .OR. a<b .AND. b>c .OR. c==d ) THEN
+         CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+         concatenacionStrings = 'comilla doble " dentro' + "comilla simple  dentro";
+      ELSE
+         CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+         IF ( .TRUE. .OR. a<b .AND. b>c .AND. c==d ) THEN
+            CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+            concatenacionStrings = 'comilla doble " dentro' + "comilla simple  dentro";
+         ENDIF
+      ENDIF
+   ENDIF
+
+       DO WHILE ( .TRUE. .OR. a<b .AND. b>c .AND. c==d )
+          CALL PruebaIfs;
+          DO WHILE ( .TRUE. .OR. a<b .AND. b>c .OR. c==d )
+             CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
+             contador = contador + 1;
+             CALL PruebaIfs;
+             CALL Subrutina0Param;
+          ENDDO
+       ENDDO
+END SUBROUTINE Subrutina0Param
+
