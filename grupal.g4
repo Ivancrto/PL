@@ -83,10 +83,13 @@ grammar grupal;
 	         	         	            		       }
 	         	         	            		       ind++;
 	         	         	            		    }
+	         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+	         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 	         	         	            		    return cadenaCorrecta;
 	         	         			    }
 	         	         			   else{
-	         	         			       cadenaCorrecta = "\"" + s.substring(1, s.length()-1).replaceAll("\"", "\\\\\"") + "\"";
+	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 	         	         			       return cadenaCorrecta;
 	         	         			   }
 
@@ -341,7 +344,7 @@ casos returns [String re=""]: 'CASE' casosp {
                                             $re= "case " + $casosp.re;}
                                             }
                                             | {$re+="";};
-casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + "SENTENCIAS_SENTLIST" + "\n" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "default:" + "\n" + "SENTENCIAS_SENTLIST";};
+casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + $sentlist.re + "\n" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "default:" + "\n" +  $sentlist.re;};
 etiquetas returns [String re]: simpvalue etiquetaspp {$re=$etiquetaspp.ant + $simpvalue.s + $etiquetaspp.re;}| ':' simpvalue{$re="<" + $simpvalue.s;};
 etiquetasp returns [String re,String ant]: simpvalue {$re=" to " + $simpvalue.s; $ant="";}| {$re=""; $ant=">";};
 etiquetaspp returns [String re, String ant]: ':' etiquetasp {$re=$etiquetasp.re; $ant=$etiquetasp.ant;}| listaetiquetas{$re=$listaetiquetas.re;$ant="";};
