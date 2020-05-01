@@ -52,7 +52,8 @@ grammar grupal;
     }
 
 //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-  public String strConstComillas(String sConst){
+
+public String strConstComillas(String sConst){
 	         	         			    String cadenaCorrecta = "";
 	         	         			    String s = sConst;
 	         	         			    if(sConst.contains ("+")){
@@ -90,7 +91,7 @@ grammar grupal;
 	         	         	            		    return cadenaCorrecta;
 	         	         			    }
 	         	         			   else{
-	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+	         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
 	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 	         	         			       return cadenaCorrecta;
 	         	         			   }
@@ -332,7 +333,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
                 | proc_call ';' {$re =  $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + ($sentpp.re);
                 //insertTxtC($re);
                 }
-                | 'DO' sentppp {$re = $sentppp.re;
+                | 'DO' sentppp {$re = $sentppp.re; // "do {" +
                 //insertTxtC($re);
                 }
                 |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;
