@@ -332,7 +332,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
                 | proc_call ';' {$re =  $proc_call.s +";\n";}| 'IF' '(' expcond ')' sentpp {$re = "if (" + $expcond.s + ")" + ($sentpp.re);
                 //insertTxtC($re);
                 }
-                | 'DO' sentppp {$re = $sentppp.re; // "do {" +
+                | 'DO' sentppp {$re = $sentppp.re;
                 //insertTxtC($re);
                 }
                 |'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' {$re="switch (" + $exp.re + "){\n" + $casos.re + "\n}\n" ;
@@ -341,7 +341,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
 
 sentp returns [String re]: 'ENDIF' {$re = "\n}\n";}| 'ELSE' sentlist 'ENDIF' {$re = "}\nelse {\n" + $sentlist.re +"\n" +"}\n";};
 sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" + $sentlist.re + $sentp.re;} | sent {$re = "{" + "\n"+$sent.re+"\n}\n";};
-sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ $sentlist.re +"\n"+'}';};
+sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = "for("+$IDENT.text +"="+ $val1.doVal+"; "+$IDENT.text+"!="+ $val2.doVal+"; "+$IDENT.text+ "=" +$IDENT.text+"-"+$val3.doVal+"){" + "\n"+ $sentlist.re +"\n"+"}\n";};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
