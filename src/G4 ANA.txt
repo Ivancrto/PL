@@ -1,3 +1,4 @@
+
 // java -jar antlr-4.7.2-complete.jar grupal.g4
 
 grammar grupal;
@@ -16,6 +17,8 @@ grammar grupal;
 }
 
 @members {
+
+    Cabeceras cab= new Cabeceras();
     Constante constantes = new Constante();
     File file = new File("codigo.c");
     FileWriter fr;
@@ -32,22 +35,7 @@ grammar grupal;
 
     public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
     public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
-    public void comprobar(String id){
-        if(mapVarSub.get(id)==null){
-            System.out.println("La variable "+id+" no coincide con ningun argumento.");
-        }
-        else{
-               if(mapVarSub.get(id)==1){
-                System.out.println("La declaracion de la variable "+id+" se ha repetido.");
-               }
-                mapVarSub.put(id,1);
-        }
-    }
-    public void comprobarTodosSub(){    //Se encarga de comprobar que se han declarado todas las variables
-          if(mapVarSub.containsValue(0)){
-              System.out.println("Hay variables sin declarar.");
-          }
-    }
+
 
 //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
 
@@ -170,9 +158,9 @@ dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}|
 
 cabecera returns[String re]: 'INTERFACE' cablist 'END' 'INTERFACE' {$re=$cablist.re;}| {$re="";};
 
-cablist returns[String re]: decproc decsubprog {$re=$decproc.re + $decsubprog.re;}| decfun decsubprog {$re=$decfun.re + $decsubprog.re;};
+cablist returns[String re]: decproc decsubprog | decfun decsubprog ;
 
-decsubprog returns[String re]: decproc decsubprog {$re=$decproc.re + $decsubprog.re;}| decfun decsubprog {$re=$decfun.re + $decsubprog.re;}| {$re="";};
+decsubprog returns[String re]: decproc decsubprog {System.out.println(cab.toString());}| decfun decsubprog {System.out.println(cab.toString());}| {$re="";};
 sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re="";};
 
 //#DEFINE
@@ -201,126 +189,30 @@ varlistp [String cl]returns [String s]: ',' varlist[$cl] {$s= ", " + $varlist.s;
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
 //Declaracion de SUBRUTINE en la interfaz
-decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {
-                                                                                                            //Primera comprobacion:
-                                                                                                            if(!($id1.text).equals($id2.text)){
-                                                                                                                System.out.println("El nombre de la declaracion de la subrutina "+$id1.text+ " no coincide con el nombre usado en el cierre "+$id2.text);
-                                                                                                            }
-                                                                                                            comprobarTodosSub();
-                                                                                                            $re="void "+$id1.text;
-                                                                                                            if($formal_paramlist.esVoid==1)
-                                                                                                                $re+="(void)";
-                                                                                                            else
-                                                                                                                $re+="("+$dec_s_paramlist.re+")";
-                                                                                                            $re+=";\n";
-                                                                                                            //insertTxtC($re);
-                                                                                                            mapVarSub.clear();
-                                                                                                            };
-formal_paramlist[String id, boolean declaration] returns [int esVoid]:
-     {
-          if($declaration){
-            if(comprobacionPunteroFunc.get($id) == null){
-                HashMap<String,String[]> x = new HashMap<String,String[]>();
-                comprobacionPunteroFunc.put($id, x);
-            }
-          }
+decproc: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {cab.addSub($id1.text,$id2.text); };
 
-      }
- '(' nomparamlist[$id,$declaration] ')' {
-        $esVoid=0;
-        }
-    | {$esVoid=1;};
+formal_paramlist[String id, boolean declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')' {
+                                                                                                                $esVoid=0;
+                                                                                                         }
+                                                                                                            | {$esVoid=1;};
+
 nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaration] {
-    if($declaration){
-        String[] valores = new String[1];
-        valores[0] = $IDENT.text;
-        comprobacionPunteroFunc.get($id).put($IDENT.text, valores);
+    if($declaration){   //Se trata de una declaracion de cabecera en la interfaz
+        cab.addArgSubFun($id,$IDENT.text);
     }
-    else{   //Segunda comprobacion
-        HashMap<String, String[]> values=comprobacionPunteroFunc.get($id);
-        if(!values.containsKey($IDENT.text)){
-            System.out.println("No se reconoce la variable: "+$IDENT.text+" en "+$id);
-        }
+    else{   //Implementacion--> PARTE DE IVAN
+
     }
-    mapVarSub.put($IDENT.text,0);
 };
 nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
-dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';'  dec_s_paramlist[$id] {
-                                                                                                        String tipo=$tipo.t;
-                                                                                                        if(($tipo.t).startsWith("char")){
-                                                                                                            tipo="char ";
-                                                                                                        }
-                                                                                                        $re=tipo+ $tipoparam.c +$IDENT.text;
-                                                                                                        //Comprobamos que las variables se hayan declarado o no estetn repetidas:
-                                                                                                        comprobar($IDENT.text);
-                                                                                                        if(!($dec_s_paramlist.re).equals("")){
-                                                                                                            $re+=','+$dec_s_paramlist.re;
-                                                                                                        }
-                                                                                                        String[] valores = new String[2];
-                                                                                                        if($tipoparam.c == "*"){
-                                                                                                              valores[1] = "puntero";
-                                                                                                              valores[0] = $IDENT.text;
-                                                                                                        }else{
-                                                                                                            valores[1] = "no_puntero";
-                                                                                                            valores[0] = $IDENT.text;
-                                                                                                        }
-                                                                                                        //Segunda comprobacion parte 2 Subrutinas
-                                                                                                        HashMap<String, String[]> values=comprobacionPunteroFunc.get($id);
-                                                                                                        if(!values.containsKey(valores[0])){
-                                                                                                              System.out.println("No se reconoce la variable: "+$IDENT.text+" en la cabecera de "+$id);
-                                                                                                        }
-                                                                                                        //else{
-                                                                                                            comprobacionPunteroFunc.get($id).put($IDENT.text, valores);
-                                                                                                        //}
-                                                                                                       }
-                                                                                                   |{$re="";} ;
+dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {cab.addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
+
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
 //Falta comprobar que la ultima sentencia tiene el valor de IDENT
-decfun returns[String re]: 'FUNCTION' id1=IDENT {
-             if(comprobacionPunteroFunc.get($id1) == null){
-                 HashMap<String,String[]> x = new HashMap<String,String[]>();
-                 comprobacionPunteroFunc.put($id1.text, x);
-             }
-
-   }
- '(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {
-                    //Tercera comprobacion:
-                    if(!($id1.text).equals($id2.text)){
-                        System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto "+$id2.text+" no coinciden.");
-                    }
-                    else{
-                        $re=$tipo.t+$id1.text+'('+$dec_f_paramlist.re+");\n";
-                        //insertTxtC($re);
-                    }
-                    };
-dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist[$id] {
-                                                          String corchetes="";
-                                                          String tipo=$tipo.t;
-                                                          if(($tipo.t).startsWith("char")){
-                                                              corchetes="[]";
-                                                              tipo="char ";
-                                                          }
-                                                           $re=tipo + $IDENT.text+corchetes;
-                                                          //Comprobamos que las variables se hayan declarado o no estetn repetidas:
-                                                          comprobar($IDENT.text);
-                                                          if(!($dec_f_paramlist.re).equals("")){
-                                                              $re+=','+$dec_f_paramlist.re;
-                                                          }
-                                                        String[] valores = new String[1];
-                                                         valores[0] = $IDENT.text;
-
-                                                        //Segunda comprobacion parte 2 Funciones
-                                                        HashMap<String, String[]> values=comprobacionPunteroFunc.get($id);
-                                                        if(!values.containsKey(valores[0])){
-                                                              System.out.println("No se reconoce la variable: "+$IDENT.text+" en la cabecera de "+$id);
-                                                        }
-                                                        //else{
-                                                            comprobacionPunteroFunc.get($id).put($IDENT.text, valores);
-                                                            //}
-                                                            }
-                                                          |{$re="";} ;
+decfun: 'FUNCTION' id1=IDENT {cab.addFun($id1.text);}'(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {cab.addTipoFun($id1.text,$tipo.t,$id2.text, $id3.text);};
+dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {cab.addArgValuesFun($id,$tipo.t,$IDENT.text);} dec_f_paramlist[$id] {$re="";}  |{$re="";} ;
 
 
 sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.re + ";\n";}
@@ -355,6 +247,7 @@ codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,fal
     //Primera comprobacion:
     if(!($id1.text).equals($id2.text)){
         System.out.println("El nombre de la implementación de la subrutina "+$id1.text+ " no coincide con el nombre usado en su cierre "+$id2.text);
+
     }
     String t = "void " + $id1.text;
     if($formal_paramlist.esVoid==1){
@@ -376,6 +269,7 @@ codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,false]
     //Tercera comprobacion:
     if(!($id1.text).equals($id2.text)){
             System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto en su implementacion "+$id2.text+" no coinciden con los declarados en la interfaz.");
+
     }
     //Tercera comprobacion parte dos:
     if(!($id1.text).equals($id3.text)){

@@ -131,7 +131,6 @@ public class grupalParser extends Parser {
 	public ATN getATN() { return _ATN; }
 
 
-
 	    Constante constantes = new Constante();
 	    File file = new File("codigo.c");
 	    FileWriter fr;
@@ -166,7 +165,8 @@ public class grupalParser extends Parser {
 	    }
 
 	//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-	  public String strConstComillas(String sConst){
+
+	public String strConstComillas(String sConst){
 		         	         			    String cadenaCorrecta = "";
 		         	         			    String s = sConst;
 		         	         			    if(sConst.contains ("+")){
@@ -204,7 +204,7 @@ public class grupalParser extends Parser {
 		         	         	            		    return cadenaCorrecta;
 		         	         			    }
 		         	         			   else{
-		         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+		         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
 		         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 		         	         			       return cadenaCorrecta;
 		         	         			   }
@@ -1565,7 +1565,6 @@ public class grupalParser extends Parser {
 			                                                                                                            //Primera comprobacion:
 			                                                                                                            if(!((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null)).equals((((DecprocContext)_localctx).id2!=null?((DecprocContext)_localctx).id2.getText():null))){
 			                                                                                                                System.out.println("El nombre de la declaracion de la subrutina "+(((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null)+ " no coincide con el nombre usado en el cierre "+(((DecprocContext)_localctx).id2!=null?((DecprocContext)_localctx).id2.getText():null));
-
 			                                                                                                            }
 			                                                                                                            comprobarTodosSub();
 			                                                                                                            ((DecprocContext)_localctx).re = "void "+(((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null);
@@ -1873,7 +1872,6 @@ public class grupalParser extends Parser {
 				                                                                                                        }else{
 				                                                                                                            valores[1] = "no_puntero";
 				                                                                                                            valores[0] = (((Dec_s_paramlistContext)_localctx).IDENT!=null?((Dec_s_paramlistContext)_localctx).IDENT.getText():null);
-
 				                                                                                                        }
 				                                                                                                        //Segunda comprobacion parte 2 Subrutinas
 				                                                                                                        HashMap<String, String[]> values=comprobacionPunteroFunc.get(_localctx.id);
@@ -2012,7 +2010,6 @@ public class grupalParser extends Parser {
 			setState(327);
 			((DecfunContext)_localctx).id1 = match(IDENT);
 
-
 			             if(comprobacionPunteroFunc.get(((DecfunContext)_localctx).id1) == null){
 			                 HashMap<String,String[]> x = new HashMap<String,String[]>();
 			                 comprobacionPunteroFunc.put((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null), x);
@@ -2041,7 +2038,6 @@ public class grupalParser extends Parser {
 			match(T__18);
 			setState(339);
 			((DecfunContext)_localctx).id3 = match(IDENT);
-
 
 			                    //Tercera comprobacion:
 			                    if(!((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null)).equals((((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null))){
@@ -2527,7 +2523,7 @@ public class grupalParser extends Parser {
 				((SentpppContext)_localctx).sentlist = sentlist();
 				setState(424);
 				match(T__27);
-				((SentpppContext)_localctx).re =  (((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null) +" "+ ((SentpppContext)_localctx).val1.doVal+", " + ((SentpppContext)_localctx).val2.doVal+", " + ((SentpppContext)_localctx).val3.doVal +";" + "\n"+ ((SentpppContext)_localctx).sentlist.re +"\n"+'}';
+				((SentpppContext)_localctx).re =  "for("+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null) +"="+ ((SentpppContext)_localctx).val1.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"!="+ ((SentpppContext)_localctx).val2.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+ "=" +(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"-"+((SentpppContext)_localctx).val3.doVal+"){" + "\n"+ ((SentpppContext)_localctx).sentlist.re +"\n"+"}\n";
 				}
 				break;
 			default:
@@ -3266,7 +3262,6 @@ public class grupalParser extends Parser {
 			    //Primera comprobacion:
 			    if(!((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null)).equals((((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null))){
 			        System.out.println("El nombre de la implementación de la subrutina "+(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null)+ " no coincide con el nombre usado en su cierre "+(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null));
-
 			    }
 			    String t = "void " + (((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null);
 			    if(((CodprocContext)_localctx).formal_paramlist.esVoid==1){
@@ -3396,7 +3391,6 @@ public class grupalParser extends Parser {
 			    //Tercera comprobacion:
 			    if(!((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)).equals((((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null))){
 			            System.out.println("El nombre de la funcion "+(((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)+" y el nombre asociado al tipo devuelto en su implementacion "+(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null)+" no coinciden con los declarados en la interfaz.");
-
 			    }
 			    //Tercera comprobacion parte dos:
 			    if(!((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)).equals((((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null))){

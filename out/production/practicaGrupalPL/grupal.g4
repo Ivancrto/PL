@@ -1,4 +1,3 @@
-
 // java -jar antlr-4.7.2-complete.jar grupal.g4
 
 grammar grupal;
@@ -17,7 +16,6 @@ grammar grupal;
 }
 
 @members {
-
     Constante constantes = new Constante();
     File file = new File("codigo.c");
     FileWriter fr;
@@ -52,7 +50,8 @@ grammar grupal;
     }
 
 //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-  public String strConstComillas(String sConst){
+
+public String strConstComillas(String sConst){
 	         	         			    String cadenaCorrecta = "";
 	         	         			    String s = sConst;
 	         	         			    if(sConst.contains ("+")){
@@ -90,7 +89,7 @@ grammar grupal;
 	         	         	            		    return cadenaCorrecta;
 	         	         			    }
 	         	         			   else{
-	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+	         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
 	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 	         	         			       return cadenaCorrecta;
 	         	         			   }
@@ -206,7 +205,6 @@ decproc returns [String re]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,t
                                                                                                             //Primera comprobacion:
                                                                                                             if(!($id1.text).equals($id2.text)){
                                                                                                                 System.out.println("El nombre de la declaracion de la subrutina "+$id1.text+ " no coincide con el nombre usado en el cierre "+$id2.text);
-
                                                                                                             }
                                                                                                             comprobarTodosSub();
                                                                                                             $re="void "+$id1.text;
@@ -265,7 +263,6 @@ dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam 
                                                                                                         }else{
                                                                                                             valores[1] = "no_puntero";
                                                                                                             valores[0] = $IDENT.text;
-
                                                                                                         }
                                                                                                         //Segunda comprobacion parte 2 Subrutinas
                                                                                                         HashMap<String, String[]> values=comprobacionPunteroFunc.get($id);
@@ -282,7 +279,6 @@ tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 //Falta comprobar que la ultima sentencia tiene el valor de IDENT
 decfun returns[String re]: 'FUNCTION' id1=IDENT {
-
              if(comprobacionPunteroFunc.get($id1) == null){
                  HashMap<String,String[]> x = new HashMap<String,String[]>();
                  comprobacionPunteroFunc.put($id1.text, x);
@@ -290,7 +286,6 @@ decfun returns[String re]: 'FUNCTION' id1=IDENT {
 
    }
  '(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {
-
                     //Tercera comprobacion:
                     if(!($id1.text).equals($id2.text)){
                         System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto "+$id2.text+" no coinciden.");
@@ -341,7 +336,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
 
 sentp returns [String re]: 'ENDIF' {$re = "\n}\n";}| 'ELSE' sentlist 'ENDIF' {$re = "}\nelse {\n" + $sentlist.re +"\n" +"}\n";};
 sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" + $sentlist.re + $sentp.re;} | sent {$re = "{" + "\n"+$sent.re+"\n}\n";};
-sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = $IDENT.text +" "+ $val1.doVal+", " + $val2.doVal+", " + $val3.doVal +";" + "\n"+ $sentlist.re +"\n"+'}';};
+sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = "for("+$IDENT.text +"="+ $val1.doVal+"; "+$IDENT.text+"!="+ $val2.doVal+"; "+$IDENT.text+ "=" +$IDENT.text+"-"+$val3.doVal+"){" + "\n"+ $sentlist.re +"\n"+"}\n";};
 exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
@@ -360,7 +355,6 @@ codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,fal
     //Primera comprobacion:
     if(!($id1.text).equals($id2.text)){
         System.out.println("El nombre de la implementación de la subrutina "+$id1.text+ " no coincide con el nombre usado en su cierre "+$id2.text);
-
     }
     String t = "void " + $id1.text;
     if($formal_paramlist.esVoid==1){
@@ -382,7 +376,6 @@ codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,false]
     //Tercera comprobacion:
     if(!($id1.text).equals($id2.text)){
             System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto en su implementacion "+$id2.text+" no coinciden con los declarados en la interfaz.");
-
     }
     //Tercera comprobacion parte dos:
     if(!($id1.text).equals($id3.text)){

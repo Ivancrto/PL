@@ -112,7 +112,6 @@ public class grupalLexer extends Lexer {
 	}
 
 
-
 	    Constante constantes = new Constante();
 	    File file = new File("codigo.c");
 	    FileWriter fr;
@@ -147,7 +146,8 @@ public class grupalLexer extends Lexer {
 	    }
 
 	//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-	  public String strConstComillas(String sConst){
+
+	public String strConstComillas(String sConst){
 		         	         			    String cadenaCorrecta = "";
 		         	         			    String s = sConst;
 		         	         			    if(sConst.contains ("+")){
@@ -185,7 +185,7 @@ public class grupalLexer extends Lexer {
 		         	         	            		    return cadenaCorrecta;
 		         	         			    }
 		         	         			   else{
-		         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
+		         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
 		         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
 		         	         			       return cadenaCorrecta;
 		         	         			   }
