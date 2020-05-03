@@ -300,7 +300,9 @@ public class grupalParser extends Parser {
 			setState(118);
 			((PrgContext)_localctx).subproglist = subproglist();
 			 System.out.println(creador.getConstantes().getDefine());
-			System.out.println(cab.toString());
+			    System.out.println(cab.toString());
+			    System.out.println(creador.getFusionFuncionSubrutina());
+
 			insertTxtC(tabulacion("\n" + ((PrgContext)_localctx).cabecera.re + "\n" + ((PrgContext)_localctx).subproglist.re  + "\n" + "void main (void){" + "\n" + ((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re + "\n"+ "}\n"));
 			}
 		}
@@ -1593,9 +1595,7 @@ public class grupalParser extends Parser {
 				nomparamlist(_localctx.id,_localctx.declaration);
 				setState(286);
 				match(T__12);
-
-				                                                                                                                ((Formal_paramlistContext)_localctx).esVoid = 0;
-				                                                                                                         
+				  ((Formal_paramlistContext)_localctx).esVoid = 0; 
 				}
 				break;
 			case T__2:
@@ -3140,20 +3140,10 @@ public class grupalParser extends Parser {
 			setState(518);
 			((CodprocContext)_localctx).id2 = match(IDENT);
 
-			    //Primera comprobacion:
-			    if(!((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null)).equals((((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null))){
-			        System.out.println("El nombre de la implementación de la subrutina "+(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null)+ " no coincide con el nombre usado en su cierre "+(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null));
 
-			    }
-			    String t = "void " + (((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null);
-			    if(((CodprocContext)_localctx).formal_paramlist.esVoid==1){
-			      t +="(void)";}
-			    else{
-			      t += "("+((CodprocContext)_localctx).dec_s_paramlist.re+")";
-			    }
-			    t += "{\n"+ ((CodprocContext)_localctx).dcllist.s+ ((CodprocContext)_localctx).sent.re+ ((CodprocContext)_localctx).sentlist.re +"}\n";
-			    ((CodprocContext)_localctx).s = t;
-			    //insertTxtC(_localctx.s);
+			    creador.getSubrutina().comprobacion((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null));//Comprobacion:
+			    creador.fusion(creador.getSubrutina().construirSubrutina(((CodprocContext)_localctx).formal_paramlist.esVoid,(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),((CodprocContext)_localctx).dec_s_paramlist.re ,((CodprocContext)_localctx).dcllist.s, ((CodprocContext)_localctx).sent.re, ((CodprocContext)_localctx).sentlist.re));
+
 
 			}
 		}
@@ -3266,21 +3256,11 @@ public class grupalParser extends Parser {
 			setState(540);
 			((CodfunContext)_localctx).id4 = match(IDENT);
 
-			    //Primera comprobacion:
-			    if(!((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)).equals((((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null))){
-			        System.out.println("El nombre de la implementacion de la funcion "+(((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)+ " no coincide con el nombre usado en el cierre "+(((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null));
-			    }
-			    //Tercera comprobacion:
-			    if(!((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)).equals((((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null))){
-			            System.out.println("El nombre de la funcion "+(((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)+" y el nombre asociado al tipo devuelto en su implementacion "+(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null)+" no coinciden con los declarados en la interfaz.");
 
-			    }
-			    //Tercera comprobacion parte dos:
-			    if(!((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null)).equals((((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null))){
-			        System.out.println("La variable de valor de retorno "+(((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null)+" no coincide con el nombre de la funcion "+(((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null));
-			    }
-			    ((CodfunContext)_localctx).s =  ((CodfunContext)_localctx).tipo.t + (((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null) + "("+((CodfunContext)_localctx).dec_f_paramlist.re+")" +"{\n" + ((CodfunContext)_localctx).dcllist.s+ ((CodfunContext)_localctx).sent.re+ ((CodfunContext)_localctx).sentlist.re + "return " + ((CodfunContext)_localctx).exp.re + ";\n}\n";
-			    //insertTxtC(_localctx.s);
+			    creador.getFunciones().comprobacion((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null),(((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null),(((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null));//Comprobacion:
+			    creador.fusion(creador.getFunciones().construirFuncion( ((CodfunContext)_localctx).tipo.t, (((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null), ((CodfunContext)_localctx).dec_f_paramlist.re, ((CodfunContext)_localctx).dcllist.s, ((CodfunContext)_localctx).sent.re, ((CodfunContext)_localctx).sentlist.re,  ((CodfunContext)_localctx).exp.re));
+
+
 
 			}
 		}

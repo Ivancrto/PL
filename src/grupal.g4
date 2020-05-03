@@ -153,6 +153,8 @@ ERRORES: . ;
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
     System.out.println(cab.toString());
+    System.out.println(creador.getFusionFuncionSubrutina());
+
 insertTxtC(tabulacion("\n" + $cabecera.re + "\n" + $subproglist.re  + "\n" + "void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n"));};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
@@ -204,6 +206,7 @@ nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaratio
     }
 };
 nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
+//hacer ivan
 dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {cab.addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
@@ -242,39 +245,19 @@ subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subprog
 
 
 codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,false] dec_s_paramlist[$id1.text]  dcllist sent sentlist 'END' 'SUBROUTINE' id2=IDENT {
-    //Primera comprobacion:
-    if(!($id1.text).equals($id2.text)){
-        System.out.println("El nombre de la implementación de la subrutina "+$id1.text+ " no coincide con el nombre usado en su cierre "+$id2.text);
 
-    }
-    String t = "void " + $id1.text;
-    if($formal_paramlist.esVoid==1){
-      t +="(void)";}
-    else{
-      t += "("+$dec_s_paramlist.re+")";
-    }
-    t += "{\n"+ $dcllist.s+ $sent.re+ $sentlist.re +"}\n";
-    $s=t;
-    //insertTxtC($s);
+    creador.getSubrutina().comprobacion($id1.text,$id2.text);//Comprobacion:
+    creador.fusion(creador.getSubrutina().construirSubrutina($formal_paramlist.esVoid,$id1.text,$dec_s_paramlist.re ,$dcllist.s, $sent.re, $sentlist.re));
+
 };
 
 //AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
 codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,false] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
-    //Primera comprobacion:
-    if(!($id1.text).equals($id4.text)){
-        System.out.println("El nombre de la implementacion de la funcion "+$id1.text+ " no coincide con el nombre usado en el cierre "+$id4.text);
-    }
-    //Tercera comprobacion:
-    if(!($id1.text).equals($id2.text)){
-            System.out.println("El nombre de la funcion "+$id1.text+" y el nombre asociado al tipo devuelto en su implementacion "+$id2.text+" no coinciden con los declarados en la interfaz.");
 
-    }
-    //Tercera comprobacion parte dos:
-    if(!($id1.text).equals($id3.text)){
-        System.out.println("La variable de valor de retorno "+$id3.text+" no coincide con el nombre de la funcion "+$id1.text);
-    }
-    $s= $tipo.t + $id1.text + "("+$dec_f_paramlist.re+")" +"{\n" + $dcllist.s+ $sent.re+ $sentlist.re + "return " + $exp.re + ";\n}\n";
-    //insertTxtC($s);
+    creador.getFunciones().comprobacion($id1.text,$id2.text,$id3.text,$id4.text);//Comprobacion:
+    creador.fusion(creador.getFunciones().construirFuncion( $tipo.t, $id1.text, $dec_f_paramlist.re, $dcllist.s, $sent.re, $sentlist.re,  $exp.re));
+
+
 };
 
 //Modificado

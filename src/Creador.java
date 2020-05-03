@@ -10,6 +10,7 @@ public class Creador {
     private Cabeceras cabezera;
     private Funciones funciones;
     private Subrutina subrutina;
+    private String fusionFuncionSubrutina;
     //private Principal principal;
 
 
@@ -18,14 +19,11 @@ public class Creador {
         this.cabezera = new Cabeceras();
         this.funciones = new Funciones();
         this.subrutina = new Subrutina();
+        this.fusionFuncionSubrutina = "";
     }
 
     public Constante getConstantes() {
         return constantes;
-    }
-
-    public void setConstantes(Constante constantes) {
-        this.constantes = constantes;
     }
 
     public Cabeceras getCabezera() {
@@ -40,16 +38,16 @@ public class Creador {
         return funciones;
     }
 
-    public void setFunciones(Funciones funciones) {
-        this.funciones = funciones;
-    }
-
     public Subrutina getSubrutina() {
         return subrutina;
     }
 
-    public void setSubrutina(Subrutina subrutina) {
-        this.subrutina = subrutina;
+    public String getFusionFuncionSubrutina() {
+        return fusionFuncionSubrutina;
+    }
+
+    public void fusion(String textFS){
+        this.fusionFuncionSubrutina += textFS + "\n";
     }
 
     File file = new File("codigo.c");
