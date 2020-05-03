@@ -152,6 +152,7 @@ ERRORES: . ;
 
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
+    System.out.println(cab.toString());
 insertTxtC(tabulacion("\n" + $cabecera.re + "\n" + $subproglist.re  + "\n" + "void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n"));};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
@@ -161,7 +162,7 @@ cabecera returns[String re]: 'INTERFACE' cablist 'END' 'INTERFACE' {$re=$cablist
 
 cablist returns[String re]: decproc decsubprog | decfun decsubprog ;
 
-decsubprog returns[String re]: decproc decsubprog {System.out.println(cab.toString());}| decfun decsubprog {System.out.println(cab.toString());}| {$re="";};
+decsubprog returns[String re]: decproc decsubprog {}| decfun decsubprog {}| {$re="";};
 sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re="";};
 
 //#DEFINE

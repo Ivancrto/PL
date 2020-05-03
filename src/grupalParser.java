@@ -300,6 +300,7 @@ public class grupalParser extends Parser {
 			setState(118);
 			((PrgContext)_localctx).subproglist = subproglist();
 			 System.out.println(creador.getConstantes().getDefine());
+			System.out.println(cab.toString());
 			insertTxtC(tabulacion("\n" + ((PrgContext)_localctx).cabecera.re + "\n" + ((PrgContext)_localctx).subproglist.re  + "\n" + "void main (void){" + "\n" + ((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re + "\n"+ "}\n"));
 			}
 		}
@@ -595,7 +596,7 @@ public class grupalParser extends Parser {
 				decproc();
 				setState(149);
 				decsubprog();
-				System.out.println(cab.toString());
+
 				}
 				break;
 			case T__18:
@@ -605,7 +606,7 @@ public class grupalParser extends Parser {
 				decfun();
 				setState(153);
 				decsubprog();
-				System.out.println(cab.toString());
+
 				}
 				break;
 			case T__2:

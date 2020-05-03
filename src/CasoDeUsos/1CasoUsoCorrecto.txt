@@ -1,3 +1,6 @@
+!------------------------------------
+! Ejemplo de programa para nivel de calificacion sobresaliente
+!------------------------------------
 PROGRAM Programa ;
 
 ! Declaracion de variables
@@ -8,7 +11,6 @@ CHARACTER (2) :: c1, c2 = 'SI' ;
 ! Declaracion de constantes
 INTEGER , PARAMETER :: cte1 = 23, cte2 = 04; ! Contantes enteras
 REAL , PARAMETER :: cte3 = 56.34 ; ! Contantes reales
-REAL , PARAMETER :: cte4 = 16.34 ; ! Contantes reales
 
 INTERFACE
 	SUBROUTINE Subrutina0Param ! Subrutina sin parametros de llamada

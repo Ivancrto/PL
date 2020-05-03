@@ -152,6 +152,7 @@ ERRORES: . ;
 
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
+    System.out.println(cab.toString());
 insertTxtC(tabulacion("\n" + $cabecera.re + "\n" + $subproglist.re  + "\n" + "void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n"));};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
@@ -161,7 +162,7 @@ cabecera returns[String re]: 'INTERFACE' cablist 'END' 'INTERFACE' {$re=$cablist
 
 cablist returns[String re]: decproc decsubprog | decfun decsubprog ;
 
-decsubprog returns[String re]: decproc decsubprog {System.out.println(cab.toString());}| decfun decsubprog {System.out.println(cab.toString());}| {$re="";};
+decsubprog returns[String re]: decproc decsubprog {}| decfun decsubprog {}| {$re="";};
 sentlist returns [String re]: sent sentlist {$re =$sent.re+ $sentlist.re;}| {$re="";};
 
 //#DEFINE
@@ -192,10 +193,7 @@ init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 //Declaracion de SUBRUTINE en la interfaz
 decproc: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {cab.addSub($id1.text,$id2.text); };
 
-formal_paramlist[String id, boolean declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')' {
-                                                                                                                $esVoid=0;
-                                                                                                         }
-                                                                                                            | {$esVoid=1;};
+formal_paramlist[String id, boolean declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')'{  $esVoid=0; }| {$esVoid=1;};
 
 nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaration] {
     if($declaration){   //Se trata de una declaracion de cabecera en la interfaz
@@ -207,7 +205,6 @@ nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaratio
 };
 nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
 dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {cab.addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
-
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
