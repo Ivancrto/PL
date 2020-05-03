@@ -2,6 +2,8 @@ import java.util.*;
 
 public class Cabeceras {
 
+    public List<String> cabOrdenadas= new LinkedList<> ();
+    public List<List<String>> argsOrdenador= new LinkedList<> ();   //La posicion correspponde con la de la funcion en cabOrdenadas
     public HashMap<String,HashMap<String,String>> cabS= new HashMap<> (); //K= nombre subrutina V=HashMap de argumentos-->(k=nombreArgumento v=traduccionC)
     public HashMap<String,String> tiposFun= new HashMap<> (); //Asocia el nombre de la funcion con su tipo
 
@@ -18,10 +20,16 @@ public class Cabeceras {
         else{
             HashMap mapa = new HashMap<String, String>();
             cabS.put (nombre,mapa);
+            cabOrdenadas.add (nombre);
+            int pos=cabOrdenadas.indexOf (nombre);
+            argsOrdenador.add (pos,new LinkedList<> ());
+
+
         }
 
-    }
-    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg){
+    }   //Añadimos una entrada nueva a la tabla hash de cabeceras
+
+    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg){   //Definimos el estilo de los argumentos de una subrutina
         String tipoAux=tipo;
         HashMap<String, String> argsS= cabS.get (nombre);
         String cadC = argsS.get(arg);
@@ -35,9 +43,10 @@ public class Cabeceras {
         cadC=tipoAux+inOut+arg;
         argsS.put (arg,cadC);
         cabS.put (nombre,argsS);
+
     }
 
-    public void addArgSubFun(String nombre, String arg){
+    public void addArgSubFun(String nombre, String arg){    //Añadimos argumentos a una cabecera correspondiente
 
         HashMap<String, String> args = cabS.get (nombre);
         if(cabS.get (nombre)==null){
@@ -46,19 +55,20 @@ public class Cabeceras {
             args.put (arg,"");//que le metes?
             cabS.put (nombre,args);
         }
-
-
+        int pos=cabOrdenadas.indexOf (nombre);
+        List<String> largs=argsOrdenador.get (pos);
+        largs.add (arg);
     }
 
     public void addFun(String nombre){
-
         cabS.put (nombre,new HashMap<> ());
+        cabOrdenadas.add (nombre);
+        int pos=cabOrdenadas.indexOf (nombre);
+        argsOrdenador.add (pos,new LinkedList<> ());
     }
-    public void addTipoFun(String nombre, String tipo, String nombreTipo, String end){
 
-        if(!nombre.equals (end)){
-            System.out.println("El nombre de la funcion "+nombre+" y el nombre declarado en el end "+end+" no coinciden.");
-        }
+    public void addTipoFun(String nombre, String tipo, String nombreTipo){
+
         if(!(nombre).equals(nombreTipo)){
             System.out.println("El nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
         }
@@ -67,7 +77,8 @@ public class Cabeceras {
         }
         tiposFun.put (nombre,tipo);
     }
-    public void addArgValuesFun(String nombre,String tipo,String arg){
+
+    public void addArgValuesFun(String nombre,String tipo,String arg){  //Le asignamos un formato a los argumentos de la declaracion de funciones
 
         HashMap<String, String> cS = cabS.get (nombre);
         String cadC = cS.get (arg);
@@ -85,10 +96,8 @@ public class Cabeceras {
     public String toString() {
 
         String r="";
-        for (Map.Entry<String, HashMap<String, String>> declaration : cabS.entrySet()) {
-            String nombre = declaration.getKey();
-            HashMap<String,String> arguments = declaration.getValue();
-
+        for (String nombre:cabOrdenadas) {
+            HashMap<String, String> arguments = cabS.get (nombre);
             if(tiposFun.get (nombre)!=null){    //Si se trata de una funcion, esta tendra una entrada en la tabla, con lo que se cumplirá la condicion
                 r+=tiposFun.get (nombre) + nombre+"( ";
             }
@@ -98,12 +107,12 @@ public class Cabeceras {
             if(arguments.isEmpty ()){   //En caso de que la subrutina no tenga argumentos
                 r+="void );" + "\n";
             }
-            else {   //En el casod de que si tengan argumentos
-                Collection<String> values = arguments.values ();
+            else {   //En el caso de que si tengan argumentos
+                List<String> argsOrd= argsOrdenador.get (cabOrdenadas.indexOf (nombre));
                 int i = 0;
-                for (String args : values) {
+                for (String args : argsOrd) {
 
-                    if (i == (values.size () - 1)) {   //Si se trata del ultimo elemento
+                    if (i == (argsOrd.size () - 1)) {   //Si se trata del ultimo elemento
                         r += args + " );" + "\n";
                     } else {
                         r += args + ",";
@@ -113,5 +122,29 @@ public class Cabeceras {
         }
 
         return r;
+    }
+
+    public List<String> getCabOrdenadas() {
+        return cabOrdenadas;
+    }
+
+    public void setCabOrdenadas(List<String> cabOrdenadas) {
+        this.cabOrdenadas = cabOrdenadas;
+    }
+
+    public HashMap<String, HashMap<String, String>> getCabS() {
+        return cabS;
+    }
+
+    public void setCabS(HashMap<String, HashMap<String, String>> cabS) {
+        this.cabS = cabS;
+    }
+
+    public HashMap<String, String> getTiposFun() {
+        return tiposFun;
+    }
+
+    public void setTiposFun(HashMap<String, String> tiposFun) {
+        this.tiposFun = tiposFun;
     }
 }

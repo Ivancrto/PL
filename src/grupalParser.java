@@ -302,6 +302,7 @@ public class grupalParser extends Parser {
 			 System.out.println(creador.getConstantes().getDefine());
 			    System.out.println(cab.toString());
 			    System.out.println(creador.getFusionFuncionSubrutina());
+			    System.out.println(creador.getPrincipal().addPrincipal(((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re));
 
 			insertTxtC(tabulacion("\n" + ((PrgContext)_localctx).cabecera.re + "\n" + ((PrgContext)_localctx).subproglist.re  + "\n" + "void main (void){" + "\n" + ((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re + "\n"+ "}\n"));
 			}
@@ -1952,7 +1953,7 @@ public class grupalParser extends Parser {
 			match(T__18);
 			setState(337);
 			((DecfunContext)_localctx).id3 = match(IDENT);
-			cab.addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null), (((DecfunContext)_localctx).id3!=null?((DecfunContext)_localctx).id3.getText():null));
+			cab.addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null));
 			}
 		}
 		catch (RecognitionException re) {
