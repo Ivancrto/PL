@@ -11,7 +11,7 @@ public class Creador {
     private Funciones funciones;
     private Subrutina subrutina;
     private String fusionFuncionSubrutina;
-    //private Principal principal;
+    private Principal principal;
 
 
     public Creador() {
@@ -20,6 +20,7 @@ public class Creador {
         this.funciones = new Funciones();
         this.subrutina = new Subrutina();
         this.fusionFuncionSubrutina = "";
+        this.principal = new Principal();
     }
 
     public Constante getConstantes() {
@@ -45,6 +46,8 @@ public class Creador {
     public String getFusionFuncionSubrutina() {
         return fusionFuncionSubrutina;
     }
+
+    public Principal getPrincipal(){ return principal; }
 
     public void fusion(String textFS){
         this.fusionFuncionSubrutina += textFS + "\n";
