@@ -7,14 +7,49 @@ public class Creador {
 
 
     private Constante constantes;
-    //private Cabecera cabezera;
-    //private Funciones funciones;
-    //private Subrutina subrutina;
+    private Cabeceras cabezera;
+    private Funciones funciones;
+    private Subrutina subrutina;
     //private Principal principal;
 
 
     public Creador() {
         this.constantes = new Constante();
+        this.cabezera = new Cabeceras();
+        this.funciones = new Funciones();
+        this.subrutina = new Subrutina();
+    }
+
+    public Constante getConstantes() {
+        return constantes;
+    }
+
+    public void setConstantes(Constante constantes) {
+        this.constantes = constantes;
+    }
+
+    public Cabeceras getCabezera() {
+        return cabezera;
+    }
+
+    public void setCabezera(Cabeceras cabezera) {
+        this.cabezera = cabezera;
+    }
+
+    public Funciones getFunciones() {
+        return funciones;
+    }
+
+    public void setFunciones(Funciones funciones) {
+        this.funciones = funciones;
+    }
+
+    public Subrutina getSubrutina() {
+        return subrutina;
+    }
+
+    public void setSubrutina(Subrutina subrutina) {
+        this.subrutina = subrutina;
     }
 
     File file = new File("codigo.c");
@@ -32,6 +67,7 @@ public class Creador {
 
     public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
     public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
+
     public void comprobar(String id){
         if(mapVarSub.get(id)==null){
             System.out.println("La variable "+id+" no coincide con ningun argumento.");

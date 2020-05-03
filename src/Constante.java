@@ -1,9 +1,10 @@
 
 public class Constante {
 
-    private String constantes = "";
+    private String constantes;
 
     public Constante(){
+        this.constantes = "";
     }
 
     public String getDefine() {

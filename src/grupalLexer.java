@@ -112,7 +112,10 @@ public class grupalLexer extends Lexer {
 	}
 
 
-	    Constante constantes = new Constante();
+
+	    Creador creador = new Creador();
+	    Cabeceras cab= new Cabeceras();
+
 	    File file = new File("codigo.c");
 	    FileWriter fr;
 	    public void insertTxtC(String t){
@@ -128,22 +131,7 @@ public class grupalLexer extends Lexer {
 
 	    public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
 	    public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
-	    public void comprobar(String id){
-	        if(mapVarSub.get(id)==null){
-	            System.out.println("La variable "+id+" no coincide con ningun argumento.");
-	        }
-	        else{
-	               if(mapVarSub.get(id)==1){
-	                System.out.println("La declaracion de la variable "+id+" se ha repetido.");
-	               }
-	                mapVarSub.put(id,1);
-	        }
-	    }
-	    public void comprobarTodosSub(){    //Se encarga de comprobar que se han declarado todas las variables
-	          if(mapVarSub.containsValue(0)){
-	              System.out.println("Hay variables sin declarar.");
-	          }
-	    }
+
 
 	//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
 

@@ -16,7 +16,8 @@ public class Cabeceras {
 
         }
         else{
-            cabS.put (nombre,(new HashMap<String, String> ()));
+            HashMap mapa = new HashMap<String, String>();
+            cabS.put (nombre,mapa);
         }
 
     }
@@ -25,7 +26,7 @@ public class Cabeceras {
         HashMap<String, String> argsS= cabS.get (nombre);
         String cadC = argsS.get(arg);
         //Comprobamos que el valor declarado coincide con una entrada de el mapa que contiene los argumentos de la cabecera
-        if(cadC.isEmpty ()){
+        if(cadC==null){
             System.out.println ("El argumento "+ arg+ "no esta declarado en la cabecera de la subrutina "+ nombre);
         }
         if((tipo).startsWith("char")){
@@ -37,15 +38,24 @@ public class Cabeceras {
     }
 
     public void addArgSubFun(String nombre, String arg){
+
         HashMap<String, String> args = cabS.get (nombre);
-        args.put (arg,"");
-        cabS.put (nombre,args);
+        if(cabS.get (nombre)==null){
+            cabS.put (nombre,new HashMap<String, String>());
+        }else{
+            args.put (arg,"");//que le metes?
+            cabS.put (nombre,args);
+        }
+
+
     }
 
     public void addFun(String nombre){
+
         cabS.put (nombre,new HashMap<> ());
     }
     public void addTipoFun(String nombre, String tipo, String nombreTipo, String end){
+
         if(!nombre.equals (end)){
             System.out.println("El nombre de la funcion "+nombre+" y el nombre declarado en el end "+end+" no coinciden.");
         }
@@ -58,6 +68,7 @@ public class Cabeceras {
         tiposFun.put (nombre,tipo);
     }
     public void addArgValuesFun(String nombre,String tipo,String arg){
+
         HashMap<String, String> cS = cabS.get (nombre);
         String cadC = cS.get (arg);
         String corchetes="";
@@ -72,6 +83,7 @@ public class Cabeceras {
 
     @Override
     public String toString() {
+
         String r="";
         for (Map.Entry<String, HashMap<String, String>> declaration : cabS.entrySet()) {
             String nombre = declaration.getKey();
