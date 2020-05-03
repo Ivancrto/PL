@@ -7,7 +7,7 @@ public class Creador {
 
 
     private Constante constantes;
-    private Cabeceras cabezera;
+    private Cabeceras cabecera;
     private Funciones funciones;
     private Subrutina subrutina;
     private String fusionFuncionSubrutina;
@@ -16,7 +16,7 @@ public class Creador {
 
     public Creador() {
         this.constantes = new Constante();
-        this.cabezera = new Cabeceras();
+        this.cabecera = new Cabeceras();
         this.funciones = new Funciones();
         this.subrutina = new Subrutina();
         this.fusionFuncionSubrutina = "";
@@ -27,12 +27,12 @@ public class Creador {
         return constantes;
     }
 
-    public Cabeceras getCabezera() {
-        return cabezera;
+    public Cabeceras getCabecera() {
+        return cabecera;
     }
 
-    public void setCabezera(Cabeceras cabezera) {
-        this.cabezera = cabezera;
+    public void setCabecera(Cabeceras cabezera) {
+        this.cabecera = cabezera;
     }
 
     public Funciones getFunciones() {

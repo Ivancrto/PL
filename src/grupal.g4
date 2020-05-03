@@ -152,7 +152,7 @@ ERRORES: . ;
 
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
-    System.out.println(cab.toString());
+    System.out.println(creador.getCabecera().toString());
     System.out.println(creador.getFusionFuncionSubrutina());
     System.out.println(creador.getPrincipal().addPrincipal($dcllist.s + $sent.re + $sentlist.re));
 
@@ -195,13 +195,13 @@ varlistp [String cl]returns [String s]: ',' varlist[$cl] {$s= ", " + $varlist.s;
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
 //Declaracion de SUBRUTINE en la interfaz
-decproc: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {cab.addSub($id1.text,$id2.text); };
+decproc: 'SUBROUTINE' id1=IDENT {creador.getCabecera().addSub($id1.text); } formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {creador.getCabecera().compruebaCabSub($id1.text,$id2.text); };
 
 formal_paramlist[String id, boolean declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')'{  $esVoid=0; }| {$esVoid=1;};
 
 nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaration] {
     if($declaration){   //Se trata de una declaracion de cabecera en la interfaz
-        cab.addArgSubFun($id,$IDENT.text);
+        creador.getCabecera().addArgSubFun($id,$IDENT.text);
     }
     else{   //Implementacion--> PARTE DE IVAN
 
@@ -209,13 +209,13 @@ nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaratio
 };
 nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
 //hacer ivan
-dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {cab.addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
+dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {creador.getCabecera().addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
 //Falta comprobar que la ultima sentencia tiene el valor de IDENT
-decfun: 'FUNCTION' id1=IDENT {cab.addFun($id1.text);}'(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {cab.addTipoFun($id1.text,$tipo.t,$id2.text);};
-dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {cab.addArgValuesFun($id,$tipo.t,$IDENT.text);} dec_f_paramlist[$id] {$re="";}  |{$re="";} ;
+decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id2.text);};
+dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {creador.getCabecera().addArgValuesFun($id,$tipo.t,$IDENT.text);} dec_f_paramlist[$id] {$re="";}  |{$re="";} ;
 
 
 sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.re + ";\n";}

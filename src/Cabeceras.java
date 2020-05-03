@@ -3,17 +3,14 @@ import java.util.*;
 public class Cabeceras {
 
     public List<String> cabOrdenadas= new LinkedList<> ();
-    public List<List<String>> argsOrdenador= new LinkedList<> ();   //La posicion correspponde con la de la funcion en cabOrdenadas
+    public List<LinkedList<String>> argsOrdenador= new LinkedList<> ();   //La posicion correspponde con la de la funcion en cabOrdenadas
     public HashMap<String,HashMap<String,String>> cabS= new HashMap<> (); //K= nombre subrutina V=HashMap de argumentos-->(k=nombreArgumento v=traduccionC)
     public HashMap<String,String> tiposFun= new HashMap<> (); //Asocia el nombre de la funcion con su tipo
 
     public Cabeceras(){
     }
 
-    public void addSub(String nombre, String end){
-        if(!nombre.equals (end)){
-            System.out.println("El nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
-        }
+    public void addSub(String nombre){
         if(cabS.get (nombre)!=null){  //Si se trata de la implementacion  --> PARTE DE IVAN
 
         }
@@ -24,18 +21,22 @@ public class Cabeceras {
             int pos=cabOrdenadas.indexOf (nombre);
             argsOrdenador.add (pos,new LinkedList<> ());
 
-
         }
 
     }   //Añadimos una entrada nueva a la tabla hash de cabeceras
 
+    public void compruebaCabSub(String nombre, String end){
+        if(!nombre.equals (end)){
+            System.out.println("El nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
+        }
+    }
     public void addArgValuesSub(String nombre, String tipo, String inOut,String arg){   //Definimos el estilo de los argumentos de una subrutina
         String tipoAux=tipo;
         HashMap<String, String> argsS= cabS.get (nombre);
         String cadC = argsS.get(arg);
         //Comprobamos que el valor declarado coincide con una entrada de el mapa que contiene los argumentos de la cabecera
         if(cadC==null){
-            System.out.println ("El argumento "+ arg+ "no esta declarado en la cabecera de la subrutina "+ nombre);
+            System.out.println ("El argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ nombre);
         }
         if((tipo).startsWith("char")){
             tipoAux="char ";
@@ -47,7 +48,6 @@ public class Cabeceras {
     }
 
     public void addArgSubFun(String nombre, String arg){    //Añadimos argumentos a una cabecera correspondiente
-
         HashMap<String, String> args = cabS.get (nombre);
         if(cabS.get (nombre)==null){
             cabS.put (nombre,new HashMap<String, String>());
@@ -56,8 +56,8 @@ public class Cabeceras {
             cabS.put (nombre,args);
         }
         int pos=cabOrdenadas.indexOf (nombre);
-        List<String> largs=argsOrdenador.get (pos);
-        largs.add (arg);
+        LinkedList<String> largs = argsOrdenador.get (pos);
+        largs.addFirst (arg);
     }
 
     public void addFun(String nombre){
@@ -111,12 +111,13 @@ public class Cabeceras {
                 List<String> argsOrd= argsOrdenador.get (cabOrdenadas.indexOf (nombre));
                 int i = 0;
                 for (String args : argsOrd) {
-
-                    if (i == (argsOrd.size () - 1)) {   //Si se trata del ultimo elemento
-                        r += args + " );" + "\n";
+                    if (i == (argsOrd.size () -1)) {   //Si se trata del ultimo elemento
+                        r +=  args + " );" + "\n";
                     } else {
-                        r += args + ",";
+                        r +=  args + ", " +
+                                "" ;
                     }
+                    i++;
                 }
             }
         }
