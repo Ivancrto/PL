@@ -10,6 +10,7 @@ public class Cabeceras {
     public Cabeceras(){
     }
 
+
     public void addSub(String nombre){
         if(cabS.get (nombre)!=null){  //Si se trata de la implementacion  --> PARTE DE IVAN
 
@@ -147,5 +148,9 @@ public class Cabeceras {
 
     public void setTiposFun(HashMap<String, String> tiposFun) {
         this.tiposFun = tiposFun;
+    }
+
+    public List<LinkedList<String>> getArgsOrdenador() {
+        return argsOrdenador;
     }
 }

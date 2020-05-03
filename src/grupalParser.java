@@ -133,99 +133,7 @@ public class grupalParser extends Parser {
 
 
 	    Creador creador = new Creador();
-	    Cabeceras cab= new Cabeceras();
 
-	    File file = new File("codigo.c");
-	    FileWriter fr;
-	    public void insertTxtC(String t){
-	    	{
-	    		try {
-	    			fr = new FileWriter(file, true);
-	    			fr.write(t);
-	    			fr.close();
-	    		} catch (IOException e) {
-	    			e.printStackTrace();
-	    		}
-	    	}}
-
-	    public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
-	    public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
-
-
-	//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-
-	public String strConstComillas(String sConst){
-		         	         			    String cadenaCorrecta = "";
-		         	         			    String s = sConst;
-		         	         			    if(sConst.contains ("+")){
-		         	         			     String[] separacion = sConst.split("\\+");
-		         	         			     int ind = 0;
-		         	         	            		    for(String i: separacion){
-		         	         	            		       if(i.charAt(i.length()-1)==' ' && i.charAt(0)==' '){
-		         	         	                               i = i.substring(1, i.length()-1);
-		         	         	            		       }else if(i.charAt(0)==' '){
-		         	         	            		           i = i.substring(1, i.length());
-		         	         	            		       }else if(i.charAt(i.length()-1)==' '){
-		         	         	            		          i = i.substring(0, i.length()-1);
-		         	         	            		       }
-		         	         	            		       if(i.substring(1, i.length()-1).contains("\"")){
-		         	         								   i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
-		         	         								   if(ind == separacion.length-1){
-		         												   cadenaCorrecta += "\"" + i + "\"";
-		         											   }else{
-		         												   cadenaCorrecta += "\"" + i + "\" + ";
-		         											   }
-		         	         							   }else{
-		         											   if(i.charAt(0)=='\''){
-		         												 i = "\"" +  i.substring(1, i.length()-1) +  "\"";
-		         											   }
-		         											   if(ind == separacion.length-1){
-		         												   cadenaCorrecta +=   i;
-		         											   }else{
-		         												   cadenaCorrecta +=  i + " + ";
-		         											   }
-		         	         	            		       }
-		         	         	            		       ind++;
-		         	         	            		    }
-		         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
-		         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
-		         	         	            		    return cadenaCorrecta;
-		         	         			    }
-		         	         			   else{
-		         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
-		         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
-		         	         			       return cadenaCorrecta;
-		         	         			   }
-
-		         	         		    }
-
-	//Metodo para tabular todo el String que reciba
-	   public String tabulacion(String t) {
-	        int cont = 0;
-	        String fin= "";
-	        String [] lineas = t.split("\n");
-	        for(String linea: lineas){
-	            if(linea.contains("{")){
-	                    String t1="";
-	                    for (int i=0; i<cont; i++){
-	                        t1+= "\t";
-	                    }
-	                    cont= cont+1;
-	                    fin+= t1 + linea+ "\n";
-	            }
-	            else{
-	                if(linea.contains("}")){
-	                cont=cont-1;
-	                }
-	                String t1="";
-	                for (int i=0; i<cont; i++){
-	                    t1+= "\t";
-	                }
-	                fin += t1 + linea + "\n";
-	            }
-	        }
-	        return fin;
-	    }
 
 	public grupalParser(TokenStream input) {
 		super(input);
@@ -234,10 +142,8 @@ public class grupalParser extends Parser {
 
 	public static class PrgContext extends ParserRuleContext {
 		public DcllistContext dcllist;
-		public CabeceraContext cabecera;
 		public SentContext sent;
 		public SentlistContext sentlist;
-		public SubproglistContext subproglist;
 		public List<TerminalNode> IDENT() { return getTokens(grupalParser.IDENT); }
 		public TerminalNode IDENT(int i) {
 			return getToken(grupalParser.IDENT, i);
@@ -286,7 +192,7 @@ public class grupalParser extends Parser {
 			setState(111);
 			((PrgContext)_localctx).dcllist = dcllist();
 			setState(112);
-			((PrgContext)_localctx).cabecera = cabecera();
+			cabecera();
 			setState(113);
 			((PrgContext)_localctx).sent = sent();
 			setState(114);
@@ -298,13 +204,12 @@ public class grupalParser extends Parser {
 			setState(117);
 			match(IDENT);
 			setState(118);
-			((PrgContext)_localctx).subproglist = subproglist();
-			 System.out.println(creador.getConstantes().getDefine());
-			    System.out.println(creador.getCabecera().toString());
-			    System.out.println(creador.getFusionFuncionSubrutina());
-			    System.out.println(creador.getPrincipal().addPrincipal(((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re));
+			subproglist();
 
-			insertTxtC(tabulacion("\n" + ((PrgContext)_localctx).cabecera.re + "\n" + ((PrgContext)_localctx).subproglist.re  + "\n" + "void main (void){" + "\n" + ((PrgContext)_localctx).dcllist.s + ((PrgContext)_localctx).sent.re + ((PrgContext)_localctx).sentlist.re + "\n"+ "}\n"));
+			    creador.getPrincipal().addPrincipal(((PrgContext)_localctx).dcllist.s , ((PrgContext)_localctx).sent.re , ((PrgContext)_localctx).sentlist.re);
+			     creador.crear();
+
+
 			}
 		}
 		catch (RecognitionException re) {
@@ -400,7 +305,7 @@ public class grupalParser extends Parser {
 				((DcllistpContext)_localctx).dcl = dcl();
 				setState(125);
 				((DcllistpContext)_localctx).dcllistp = dcllistp();
-				((DcllistpContext)_localctx).re =  ((DcllistpContext)_localctx).dcl.re+ " " + ((DcllistpContext)_localctx).dcllistp.re ;
+				((DcllistpContext)_localctx).re =  ((DcllistpContext)_localctx).dcl.re + ((DcllistpContext)_localctx).dcllistp.re ;
 				}
 				break;
 			case T__3:
@@ -1069,7 +974,7 @@ public class grupalParser extends Parser {
 				{
 				setState(219);
 				((SimpvalueContext)_localctx).STRING_CONST = match(STRING_CONST);
-				((SimpvalueContext)_localctx).s =  strConstComillas((((SimpvalueContext)_localctx).STRING_CONST!=null?((SimpvalueContext)_localctx).STRING_CONST.getText():null));
+				((SimpvalueContext)_localctx).s =  creador.strConstComillas((((SimpvalueContext)_localctx).STRING_CONST!=null?((SimpvalueContext)_localctx).STRING_CONST.getText():null));
 				}
 				break;
 			case NUM_INT_CONST_B:
@@ -1160,8 +1065,6 @@ public class grupalParser extends Parser {
 				setState(233);
 				((DefvarContext)_localctx).defvar = defvar();
 				((DefvarContext)_localctx).re =  ((DefvarContext)_localctx).tipo.t + ((DefvarContext)_localctx).varlist.s + ";\n" + ((DefvarContext)_localctx).defvar.re;
-				                                                            //insertTxtC(((DefvarContext)_localctx).tipo.t + ((DefvarContext)_localctx).varlist.s + ";\n");
-				                                                            
 				}
 				break;
 			case 2:
@@ -1361,7 +1264,7 @@ public class grupalParser extends Parser {
 			((VarlistContext)_localctx).init = init();
 			setState(258);
 			((VarlistContext)_localctx).varlistp = varlistp(_localctx.cl);
-			((VarlistContext)_localctx).s =  (((VarlistContext)_localctx).IDENT!=null?((VarlistContext)_localctx).IDENT.getText():null)+ _localctx.cl + ((VarlistContext)_localctx).init.s + ((VarlistContext)_localctx).varlistp.s;
+			((VarlistContext)_localctx).s =  (((VarlistContext)_localctx).IDENT!=null?((VarlistContext)_localctx).IDENT.getText():null)+ _localctx.cl + ((VarlistContext)_localctx).init.s + ((VarlistContext)_localctx).varlistp.s;  creador.getPrincipal().insertarVariable((((VarlistContext)_localctx).IDENT!=null?((VarlistContext)_localctx).IDENT.getText():null));
 			}
 		}
 		catch (RecognitionException re) {
@@ -1668,8 +1571,8 @@ public class grupalParser extends Parser {
 			    if(_localctx.declaration){   //Se trata de una declaracion de cabecera en la interfaz
 			        creador.getCabecera().addArgSubFun(_localctx.id,(((NomparamlistContext)_localctx).IDENT!=null?((NomparamlistContext)_localctx).IDENT.getText():null));
 			    }
-			    else{   //Implementacion--> PARTE DE IVAN
-
+			    else{   //Implementacion
+			        creador.getFunciones().comprobacionArgumentos(_localctx.id,(((NomparamlistContext)_localctx).IDENT!=null?((NomparamlistContext)_localctx).IDENT.getText():null),creador.getCabecera());
 			    }
 
 			}
@@ -2458,7 +2361,7 @@ public class grupalParser extends Parser {
 			((ExpContext)_localctx).factor = factor();
 			setState(430);
 			((ExpContext)_localctx).expp = expp();
-			((ExpContext)_localctx).re = ((ExpContext)_localctx).factor.re+((ExpContext)_localctx).expp.re;
+			((ExpContext)_localctx).re =   ((ExpContext)_localctx).factor.re+((ExpContext)_localctx).expp.re;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2917,7 +2820,7 @@ public class grupalParser extends Parser {
 			((Proc_callContext)_localctx).IDENT = match(IDENT);
 			setState(487);
 			((Proc_callContext)_localctx).subpparamlist = subpparamlist();
-			((Proc_callContext)_localctx).s =  (((Proc_callContext)_localctx).IDENT!=null?((Proc_callContext)_localctx).IDENT.getText():null) + ((Proc_callContext)_localctx).subpparamlist.s ;
+			((Proc_callContext)_localctx).s = creador.getFunciones().añadirPunterosCall((((Proc_callContext)_localctx).IDENT!=null?((Proc_callContext)_localctx).IDENT.getText():null), ((Proc_callContext)_localctx).subpparamlist.s, creador.getCabecera(), creador.getPrincipal().getVariablesPrincipal());
 			}
 		}
 		catch (RecognitionException re) {
@@ -3144,7 +3047,7 @@ public class grupalParser extends Parser {
 
 
 			    creador.getSubrutina().comprobacion((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null));//Comprobacion:
-			    creador.fusion(creador.getSubrutina().construirSubrutina(((CodprocContext)_localctx).formal_paramlist.esVoid,(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),((CodprocContext)_localctx).dec_s_paramlist.re ,((CodprocContext)_localctx).dcllist.s, ((CodprocContext)_localctx).sent.re, ((CodprocContext)_localctx).sentlist.re));
+			    creador.fusion(creador.getSubrutina().construirSubrutina(((CodprocContext)_localctx).formal_paramlist.esVoid,(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),((CodprocContext)_localctx).dec_s_paramlist.re ,((CodprocContext)_localctx).dcllist.s, ((CodprocContext)_localctx).sent.re, ((CodprocContext)_localctx).sentlist.re,creador.getCabecera()));
 
 
 			}
@@ -3260,7 +3163,7 @@ public class grupalParser extends Parser {
 
 
 			    creador.getFunciones().comprobacion((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null),(((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null),(((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null));//Comprobacion:
-			    creador.fusion(creador.getFunciones().construirFuncion( ((CodfunContext)_localctx).tipo.t, (((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null), ((CodfunContext)_localctx).dec_f_paramlist.re, ((CodfunContext)_localctx).dcllist.s, ((CodfunContext)_localctx).sent.re, ((CodfunContext)_localctx).sentlist.re,  ((CodfunContext)_localctx).exp.re));
+			    creador.fusion(creador.getFunciones().construirFuncion( ((CodfunContext)_localctx).tipo.t, (((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null), ((CodfunContext)_localctx).dec_f_paramlist.re, ((CodfunContext)_localctx).dcllist.s, ((CodfunContext)_localctx).sent.re, ((CodfunContext)_localctx).sentlist.re,  ((CodfunContext)_localctx).exp.re, creador.getCabecera()));
 
 
 
@@ -3823,7 +3726,7 @@ public class grupalParser extends Parser {
 				((CasospContext)_localctx).sentlist = sentlist();
 				setState(618);
 				((CasospContext)_localctx).casos = casos();
-				((CasospContext)_localctx).re = ((CasospContext)_localctx).etiquetas.re + ":\n" + ((CasospContext)_localctx).sentlist.re + "\n" + "break;" + "\n" + ((CasospContext)_localctx).casos.re;
+				((CasospContext)_localctx).re = ((CasospContext)_localctx).etiquetas.re + ":\n"+ ((CasospContext)_localctx).sentlist.re + "\n" + "break;" + "\n" + ((CasospContext)_localctx).casos.re;
 				}
 				break;
 			case T__46:

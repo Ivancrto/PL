@@ -21,7 +21,7 @@ INTERFACE
 	END SUBROUTINE Subrutina1Param
 
 	SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! Subrutina con 3 parametros de llamada
-		INTEGER , INTENT ( IN ) Sub3Param1 ;
+		INTEGER , INTENT ( OUT ) Sub3Param1 ;
 		REAL , INTENT ( OUT ) Sub3Param2 ;
 		CHARACTER , INTENT ( INOUT ) Sub3Param3 ;
 	END SUBROUTINE Subrutina3Param

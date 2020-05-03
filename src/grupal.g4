@@ -19,99 +19,7 @@ grammar grupal;
 @members {
 
     Creador creador = new Creador();
-    Cabeceras cab= new Cabeceras();
 
-    File file = new File("codigo.c");
-    FileWriter fr;
-    public void insertTxtC(String t){
-    	{
-    		try {
-    			fr = new FileWriter(file, true);
-    			fr.write(t);
-    			fr.close();
-    		} catch (IOException e) {
-    			e.printStackTrace();
-    		}
-    	}}
-
-    public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
-    public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
-
-
-//Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
-
-public String strConstComillas(String sConst){
-	         	         			    String cadenaCorrecta = "";
-	         	         			    String s = sConst;
-	         	         			    if(sConst.contains ("+")){
-	         	         			     String[] separacion = sConst.split("\\+");
-	         	         			     int ind = 0;
-	         	         	            		    for(String i: separacion){
-	         	         	            		       if(i.charAt(i.length()-1)==' ' && i.charAt(0)==' '){
-	         	         	                               i = i.substring(1, i.length()-1);
-	         	         	            		       }else if(i.charAt(0)==' '){
-	         	         	            		           i = i.substring(1, i.length());
-	         	         	            		       }else if(i.charAt(i.length()-1)==' '){
-	         	         	            		          i = i.substring(0, i.length()-1);
-	         	         	            		       }
-	         	         	            		       if(i.substring(1, i.length()-1).contains("\"")){
-	         	         								   i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
-	         	         								   if(ind == separacion.length-1){
-	         												   cadenaCorrecta += "\"" + i + "\"";
-	         											   }else{
-	         												   cadenaCorrecta += "\"" + i + "\" + ";
-	         											   }
-	         	         							   }else{
-	         											   if(i.charAt(0)=='\''){
-	         												 i = "\"" +  i.substring(1, i.length()-1) +  "\"";
-	         											   }
-	         											   if(ind == separacion.length-1){
-	         												   cadenaCorrecta +=   i;
-	         											   }else{
-	         												   cadenaCorrecta +=  i + " + ";
-	         											   }
-	         	         	            		       }
-	         	         	            		       ind++;
-	         	         	            		    }
-	         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
-	         	         	            		    cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
-	         	         	            		    return cadenaCorrecta;
-	         	         			    }
-	         	         			   else{
-	         	         			       cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
-	         	         			       cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
-	         	         			       return cadenaCorrecta;
-	         	         			   }
-
-	         	         		    }
-
-//Metodo para tabular todo el String que reciba
-   public String tabulacion(String t) {
-        int cont = 0;
-        String fin= "";
-        String [] lineas = t.split("\n");
-        for(String linea: lineas){
-            if(linea.contains("{")){
-                    String t1="";
-                    for (int i=0; i<cont; i++){
-                        t1+= "\t";
-                    }
-                    cont= cont+1;
-                    fin+= t1 + linea+ "\n";
-            }
-            else{
-                if(linea.contains("}")){
-                cont=cont-1;
-                }
-                String t1="";
-                for (int i=0; i<cont; i++){
-                    t1+= "\t";
-                }
-                fin += t1 + linea + "\n";
-            }
-        }
-        return fin;
-    }
 }
 
 
@@ -151,17 +59,14 @@ WS : [ \r\t\n] -> skip;
 ERRORES: . ;
 
 //GRAMATICA: SINTÁCTICO + TRADUCCIÓN DIRIGIDA POR LA SINTAXIS
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
-    System.out.println(creador.getCabecera().toString());
-    System.out.println(creador.getFusionFuncionSubrutina());
-    System.out.println(creador.getPrincipal().addPrincipal($dcllist.s + $sent.re + $sentlist.re));
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist {
+    creador.getPrincipal().addPrincipal($dcllist.s , $sent.re , $sentlist.re);
+     creador.crear();
 
-insertTxtC(tabulacion("\n" + $cabecera.re + "\n" + $subproglist.re  + "\n" + "void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n"));};
-//creador.getPrincipal().addPrincipal($dcllist.s + $sent.re + $sentlist.re);
+};
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
-dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}| {$re="";};
-
+dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re + $dcllistp.re ;}| {$re="";};
 cabecera returns[String re]: 'INTERFACE' cablist 'END' 'INTERFACE' {$re=$cablist.re;}| {$re="";};
 
 cablist returns[String re]: decproc decsubprog | decfun decsubprog ;
@@ -182,15 +87,12 @@ defcte  returns[String re]: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelis
                        | {$re="";} ;
 
 ctelist returns[String re]: ',' IDENT '=' simpvalue ctelist {$re=','+$IDENT.text+ " " +$simpvalue.s+$ctelist.re;}| {$re="";} ;
-simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= strConstComillas($STRING_CONST.text);}
+simpvalue returns[String s]: NUM_INT_CONST {$s= $NUM_INT_CONST.text;}| NUM_REAL_CONST {$s= $NUM_REAL_CONST.text;}| STRING_CONST {$s= creador.strConstComillas($STRING_CONST.text);}
                 |NUM_INT_CONST_B {$s= "0b" + $NUM_INT_CONST_B.text.substring(2,$NUM_INT_CONST_B.text.length()-1)  ;} | NUM_INT_CONST_O {$s= "0o" + $NUM_INT_CONST_O.text.substring(2,$NUM_INT_CONST_O.text.length()-1)  ;}| NUM_INT_CONST_H {$s= "0x" + $NUM_INT_CONST_H.text.substring(2,$NUM_INT_CONST_H.text.length()-1)  ;};
-defvar returns [String re]: tipo '::' varlist[$tipo.cl] ';' defvar {$re = $tipo.t + $varlist.s + ";\n" + $defvar.re;
-                                                            //insertTxtC($tipo.t + $varlist.s + ";\n");
-                                                            }
-                                                            | {$re="";} ;
+defvar returns [String re]: tipo '::' varlist[$tipo.cl] ';' defvar {$re = $tipo.t + $varlist.s + ";\n" + $defvar.re;} | {$re="";} ;
 tipo returns[String t, String cl]: 'INTEGER' {$t="int "; $cl="";}| 'REAL' {$t="float "; $cl="";}| 'CHARACTER' charlength {$t= "char "; $cl=$charlength.s;};
 charlength returns[String s]: '(' NUM_INT_CONST ')' {$s='['+ $NUM_INT_CONST.text +"] ";}| {$s="";};
-varlist [String cl] returns [String s]: IDENT init varlistp[$cl]{$s = $IDENT.text+ $cl + $init.s + $varlistp.s;};
+varlist [String cl] returns [String s]: IDENT init varlistp[$cl]{$s = $IDENT.text+ $cl + $init.s + $varlistp.s;  creador.getPrincipal().insertarVariable($IDENT.text);};
 varlistp [String cl]returns [String s]: ',' varlist[$cl] {$s= ", " + $varlist.s;}| {$s="";};
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
@@ -203,12 +105,12 @@ nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaratio
     if($declaration){   //Se trata de una declaracion de cabecera en la interfaz
         creador.getCabecera().addArgSubFun($id,$IDENT.text);
     }
-    else{   //Implementacion--> PARTE DE IVAN
-
+    else{   //Implementacion
+        creador.getFunciones().comprobacionArgumentos($id,$IDENT.text,creador.getCabecera());
     }
 };
 nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
-//hacer ivan
+
 dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {creador.getCabecera().addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
@@ -232,7 +134,7 @@ sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.r
 sentp returns [String re]: 'ENDIF' {$re = "\n}\n";}| 'ELSE' sentlist 'ENDIF' {$re = "}\nelse {\n" + $sentlist.re +"\n" +"}\n";};
 sentpp returns [String re]: 'THEN' sentlist sentp {$re = "{" +"\n" + $sentlist.re + $sentp.re;} | sent {$re = "{" + "\n"+$sent.re+"\n}\n";};
 sentppp returns [String re ]: 'WHILE' '(' expcond ')' sentlist 'ENDDO' {$re = "\n" +"while (" + $expcond.s + "){" +"\n"  +($sentlist.re) +  "}\n";}| IDENT '=' val1=doval ',' val2=doval ',' val3=doval sentlist 'ENDDO'{$re = "for("+$IDENT.text +"="+ $val1.doVal+"; "+$IDENT.text+"!="+ $val2.doVal+"; "+$IDENT.text+ "=" +$IDENT.text+"-"+$val3.doVal+"){" + "\n"+ $sentlist.re +"\n"+"}\n";};
-exp returns [String re]: factor expp {$re=$factor.re+$expp.re;};
+exp returns [String re]: factor expp {$re=  $factor.re+$expp.re;};
 expp returns [String re]:  op exp expp {$re=" "+$op.c+" "+$exp.re+ $expp.re;}| {$re="";};
 op returns[char c]: oparit {$c = $oparit.c;};
 oparit returns[char c]: '+' {$c='+';} | '-' {$c='-';} | '*' {$c='*';}| '/' {$c='/';};
@@ -240,7 +142,7 @@ factor returns [String re]: IDENT factorp {$re=$IDENT.text+$factorp.re;}|simpval
 factorp returns [String re]: '(' exp explist ')' {$re="("+$exp.re+$explist.re+")";}| {$re="";};
 explist returns [String re]: ',' exp explist {$re=','+ $exp.re +$explist.re;}| {$re="";};
 
-proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s = $IDENT.text + $subpparamlist.s ;};
+proc_call returns[String s]: 'CALL' IDENT subpparamlist {$s=creador.getFunciones().añadirPunterosCall($IDENT.text, $subpparamlist.s, creador.getCabecera(), creador.getPrincipal().getVariablesPrincipal());};
 subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $explist.re +")";} | {$s="()";};
 
 subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subproglist.re;}| codfun subproglist {$re= $codfun.s + $subproglist.re;}| {$re="";};
@@ -249,7 +151,7 @@ subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subprog
 codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,false] dec_s_paramlist[$id1.text]  dcllist sent sentlist 'END' 'SUBROUTINE' id2=IDENT {
 
     creador.getSubrutina().comprobacion($id1.text,$id2.text);//Comprobacion:
-    creador.fusion(creador.getSubrutina().construirSubrutina($formal_paramlist.esVoid,$id1.text,$dec_s_paramlist.re ,$dcllist.s, $sent.re, $sentlist.re));
+    creador.fusion(creador.getSubrutina().construirSubrutina($formal_paramlist.esVoid,$id1.text,$dec_s_paramlist.re ,$dcllist.s, $sent.re, $sentlist.re,creador.getCabecera()));
 
 };
 
@@ -257,7 +159,7 @@ codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,fal
 codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,false] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
 
     creador.getFunciones().comprobacion($id1.text,$id2.text,$id3.text,$id4.text);//Comprobacion:
-    creador.fusion(creador.getFunciones().construirFuncion( $tipo.t, $id1.text, $dec_f_paramlist.re, $dcllist.s, $sent.re, $sentlist.re,  $exp.re));
+    creador.fusion(creador.getFunciones().construirFuncion( $tipo.t, $id1.text, $dec_f_paramlist.re, $dcllist.s, $sent.re, $sentlist.re,  $exp.re, creador.getCabecera()));
 
 
 };
@@ -281,7 +183,7 @@ casos returns [String re=""]: 'CASE' casosp {
                                             $re= "case " + $casosp.re;}
                                             }
                                             | {$re+="";};
-casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n" + $sentlist.re + "\n" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "default:" + "\n" +  $sentlist.re;};
+casosp returns [String re]: '(' etiquetas ')' sentlist casos {$re=$etiquetas.re + ":\n"+ $sentlist.re + "\n" + "break;" + "\n" + $casos.re;}| 'DEFAULT' sentlist {$re= "default:" + "\n" +  $sentlist.re;};
 etiquetas returns [String re]: simpvalue etiquetaspp {$re=$etiquetaspp.ant + $simpvalue.s + $etiquetaspp.re;}| ':' simpvalue{$re="<" + $simpvalue.s;};
 etiquetasp returns [String re,String ant]: simpvalue {$re=" to " + $simpvalue.s; $ant="";}| {$re=""; $ant=">";};
 etiquetaspp returns [String re, String ant]: ':' etiquetasp {$re=$etiquetasp.re; $ant=$etiquetasp.ant;}| listaetiquetas{$re=$listaetiquetas.re;$ant="";};
