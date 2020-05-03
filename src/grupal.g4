@@ -154,8 +154,10 @@ ERRORES: . ;
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sent sentlist 'END' 'PROGRAM' IDENT subproglist { System.out.println(creador.getConstantes().getDefine());
     System.out.println(cab.toString());
     System.out.println(creador.getFusionFuncionSubrutina());
+    System.out.println(creador.getPrincipal().addPrincipal($dcllist.s + $sent.re + $sentlist.re));
 
 insertTxtC(tabulacion("\n" + $cabecera.re + "\n" + $subproglist.re  + "\n" + "void main (void){" + "\n" + $dcllist.s + $sent.re + $sentlist.re + "\n"+ "}\n"));};
+//creador.getPrincipal().addPrincipal($dcllist.s + $sent.re + $sentlist.re);
 
 dcllist returns[String s]: dcllistp {$s = $dcllistp.re ;};
 dcllistp returns[String re]: dcl dcllistp {$re = $dcl.re+ " " + $dcllistp.re ;}| {$re="";};
