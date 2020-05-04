@@ -2309,7 +2309,7 @@ public class grupalParser extends Parser {
 				((SentpppContext)_localctx).sentlist = sentlist();
 				setState(424);
 				match(T__27);
-				((SentpppContext)_localctx).re =  "for("+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null) +"="+ ((SentpppContext)_localctx).val1.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"!="+ ((SentpppContext)_localctx).val2.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+ "=" +(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"-"+((SentpppContext)_localctx).val3.doVal+"){" + "\n"+ ((SentpppContext)_localctx).sentlist.re +"\n"+"}\n";
+				((SentpppContext)_localctx).re =  "for("+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null) +"="+ ((SentpppContext)_localctx).val1.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"!="+ ((SentpppContext)_localctx).val2.doVal+"; "+(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+ "=" +(((SentpppContext)_localctx).IDENT!=null?((SentpppContext)_localctx).IDENT.getText():null)+"+"+((SentpppContext)_localctx).val3.doVal+"){" + "\n"+ ((SentpppContext)_localctx).sentlist.re +"\n"+"}\n";
 				}
 				break;
 			default:
