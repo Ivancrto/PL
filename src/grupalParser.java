@@ -1119,7 +1119,7 @@ public class grupalParser extends Parser {
 				{
 				setState(239);
 				match(T__8);
-				((TipoContext)_localctx).t = "int "; ((TipoContext)_localctx).cl = "";
+				((TipoContext)_localctx).t = "int "; ((TipoContext)_localctx).cl = "int";
 				}
 				break;
 			case T__9:
@@ -1127,7 +1127,7 @@ public class grupalParser extends Parser {
 				{
 				setState(241);
 				match(T__9);
-				((TipoContext)_localctx).t = "float "; ((TipoContext)_localctx).cl = "";
+				((TipoContext)_localctx).t = "float "; ((TipoContext)_localctx).cl = "float";
 				}
 				break;
 			case T__10:

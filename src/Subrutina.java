@@ -30,6 +30,8 @@ public class Subrutina {
         }
     }
     public String construirSubrutina(int esVoid, String ident, String paramlist, String dcllist, String sent, String sentlist, Cabeceras cab){
+
+
         String subrutinaPrima =  "void " + ident;
         if(esVoid==1){
             subrutinaPrima +="(void)";}

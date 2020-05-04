@@ -28,12 +28,12 @@ INTERFACE
 
 	FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
 		INTEGER :: Funcion1Param ;
-		REAL , INTENT ( IN ) Fun1Param1 ; 
+		REAL , INTENT ( IN ) Fun1Param1 ;
 	END FUNCTION Funcion1Param
 
 	FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 ) ! Funcion con 2 parametros de llamada
 		REAL :: Funcion2Param ;
-		INTEGER , INTENT ( IN ) Fun2Param1 ; 
+		INTEGER , INTENT ( IN ) Fun2Param1 ;
 		CHARACTER (25) , INTENT ( IN ) Fun2Param2 ; 
 	END FUNCTION Funcion2Param
 END INTERFACE
@@ -85,8 +85,8 @@ END SUBROUTINE Subrutina3Param
 
 FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
 	INTEGER :: Funcion1Param ;
-	REAL , INTENT ( IN ) Fun1Param1 ; 
-	
+	REAL , INTENT ( IN ) Fun1Param1 ;
+
 	! Declaración de variables
 	REAL :: r1, r2=0.2, r3 ;
 	

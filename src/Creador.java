@@ -58,6 +58,7 @@ public class Creador {
     public void crear(){
         if(!cabecera.isError() || !subrutina.isError() || !funciones.isError()){
             File file = new File(nameFichero.substring(0,nameFichero.indexOf("."))+".c");
+            file.delete();
             FileWriter fr;
             try {
                 fr = new FileWriter(file, true);
@@ -70,11 +71,6 @@ public class Creador {
         }
 
     }
-
-
-    public HashMap<String,Integer> mapVarSub= new HashMap<String,Integer>(); //Clave=nombre de la variable ; Valor=Numero de accesos;
-    public HashMap<String, HashMap<String,String[]>> comprobacionPunteroFunc = new HashMap<String, HashMap<String,String[]>>();
-
 
 
     //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C

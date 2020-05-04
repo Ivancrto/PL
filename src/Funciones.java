@@ -42,6 +42,10 @@ public class Funciones {
     }
     public void comprobacionArgumentos(String nombreF, String nombreA, Cabeceras cab){
         if(cab.getCabS().get(nombreF)==null){
+            System.out.println("No se declaro la función "+ nombreF);
+            this.error = true;
+        }
+        if(cab.getCabS().get(nombreF)==null){
             System.out.println("La función " + nombreF + " no fue declarado en la cabecera");
             this.error = true;
         } else if(cab.getCabS().get(nombreF).get(nombreA)==null){

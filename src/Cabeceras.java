@@ -52,6 +52,8 @@ public class Cabeceras {
     }
 
     public void addArgSubFun(String nombre, String arg){    //Añadimos argumentos a una cabecera correspondiente
+
+
         HashMap<String, String> args = cabS.get (nombre);
         if(cabS.get (nombre)==null){
             cabS.put (nombre,new HashMap<String, String>());

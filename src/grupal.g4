@@ -97,26 +97,30 @@ varlistp [String cl]returns [String s]: ',' varlist[$cl] {$s= ", " + $varlist.s;
 init returns [String s]: '=' simpvalue {$s= " = " + $simpvalue.s;}| {$s= "";};
 
 //Declaracion de SUBRUTINE en la interfaz
-decproc: 'SUBROUTINE' id1=IDENT {creador.getCabecera().addSub($id1.text); } formal_paramlist[$id1.text,true] dec_s_paramlist[$id1.text] 'END' 'SUBROUTINE' id2=IDENT {creador.getCabecera().compruebaCabSub($id1.text,$id2.text); };
+decproc: 'SUBROUTINE' id1=IDENT {creador.getCabecera().addSub($id1.text); } formal_paramlist[$id1.text,1] dec_s_paramlist[$id1.text,1] 'END' 'SUBROUTINE' id2=IDENT {creador.getCabecera().compruebaCabSub($id1.text,$id2.text); };
 
-formal_paramlist[String id, boolean declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')'{  $esVoid=0; }| {$esVoid=1;};
+formal_paramlist[String id, int declaration] returns [int esVoid]:'(' nomparamlist[$id,$declaration] ')'{  $esVoid=0; }| {$esVoid=1;};
 
-nomparamlist[String id,boolean declaration]: IDENT nomparamlistp[$id,$declaration] {
-    if($declaration){   //Se trata de una declaracion de cabecera en la interfaz
+nomparamlist[String id, int declaration]: IDENT nomparamlistp[$id,$declaration] {
+    if($declaration==1){   //Se trata de una declaracion de cabecera en la interfaz
         creador.getCabecera().addArgSubFun($id,$IDENT.text);
     }
     else{   //Implementacion
         creador.getFunciones().comprobacionArgumentos($id,$IDENT.text,creador.getCabecera());
     }
 };
-nomparamlistp[String id, boolean declaration]: ',' nomparamlist[$id,$declaration] | ;
+nomparamlistp[String id, int declaration]: ',' nomparamlist[$id,$declaration] | ;
 
-dec_s_paramlist [String id] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {creador.getCabecera().addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);}  dec_s_paramlist[$id]  {$re="";} |{$re="";} ;
+dec_s_paramlist [String id, int declaration] returns[String re]: tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' {
+    if($declaration==1){
+        creador.getCabecera().addArgValuesSub($id,$tipo.t, $tipoparam.c,$IDENT.text);
+    }
+    }  dec_s_paramlist[$id, $declaration]  {$re="";} |{$re="";} ;
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
 //Falta comprobar que la ultima sentencia tiene el valor de IDENT
-decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,true] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id2.text);};
+decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,1] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id2.text);};
 dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {creador.getCabecera().addArgValuesFun($id,$tipo.t,$IDENT.text);} dec_f_paramlist[$id] {$re="";}  |{$re="";} ;
 
 
@@ -148,7 +152,7 @@ subpparamlist returns[String s]: '(' exp explist ')' {$s= "(" + $exp.re + $expli
 subproglist returns [String re]: codproc subproglist {$re= $codproc.s + $subproglist.re;}| codfun subproglist {$re= $codfun.s + $subproglist.re;}| {$re="";};
 
 
-codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,false] dec_s_paramlist[$id1.text]  dcllist sent sentlist 'END' 'SUBROUTINE' id2=IDENT {
+codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,0] dec_s_paramlist[$id1.text,0]  dcllist sent sentlist 'END' 'SUBROUTINE' id2=IDENT {
 
     creador.getSubrutina().comprobacion($id1.text,$id2.text);//Comprobacion:
     creador.fusion(creador.getSubrutina().construirSubrutina($formal_paramlist.esVoid,$id1.text,$dec_s_paramlist.re ,$dcllist.s, $sent.re, $sentlist.re,creador.getCabecera()));
@@ -156,7 +160,7 @@ codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,fal
 };
 
 //AQUI EN UN FUTURO CREO QUE DEBERÍAMOS COMPROBAR QUE LOS IDENT SON IGUALES, PARA QUE NO SE LLAME UNA PIPO, EL OTRO ANTOIO Y OTRO PANTOJA (p.ej)
-codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,false] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
+codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,0] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
 
     creador.getFunciones().comprobacion($id1.text,$id2.text,$id3.text,$id4.text);//Comprobacion:
     creador.fusion(creador.getFunciones().construirFuncion( $tipo.t, $id1.text, $dec_f_paramlist.re, $dcllist.s, $sent.re, $sentlist.re,  $exp.re, creador.getCabecera()));
