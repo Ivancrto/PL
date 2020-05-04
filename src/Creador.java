@@ -84,36 +84,7 @@ public class Creador {
         if(sConst.contains ("+")){
             String[] separacion = sConst.split("\\+");
             int ind = 0;
-            for(String i: separacion){
-                if(i.charAt(i.length()-1)==' ' && i.charAt(0)==' '){
-                    i = i.substring(1, i.length()-1);
-                }else if(i.charAt(0)==' '){
-                    i = i.substring(1, i.length());
-                }else if(i.charAt(i.length()-1)==' '){
-                    i = i.substring(0, i.length()-1);
-                }
-                if(i.substring(1, i.length()-1).contains("\"")){
-                    i = i.substring(1, i.length()-1).replaceAll("\"", "\\\\\"");
-                    if(ind == separacion.length-1){
-                        cadenaCorrecta += "\"" + i + "\"";
-                    }else{
-                        cadenaCorrecta += "\"" + i + "\" + ";
-                    }
-                }else{
-                    if(i.charAt(0)=='\''){
-                        i = "\"" +  i.substring(1, i.length()-1) +  "\"";
-                    }
-                    if(ind == separacion.length-1){
-                        cadenaCorrecta +=   i;
-                    }else{
-                        cadenaCorrecta +=  i + " + ";
-                    }
-                }
-                ind++;
-            }
-            cadenaCorrecta = cadenaCorrecta.replaceAll("\\\\\"\\\\\"","\\\\\"");
-            cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
-            return cadenaCorrecta;
+            return  cadenaCorrecta ;
         }
         else{
             cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
