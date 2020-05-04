@@ -113,7 +113,7 @@ public class Creador {
         String fin= "";
         String [] lineas = t.split("\n");
         for(String linea: lineas){
-            if(linea.contains("{")){
+            if(linea.contains("{")){ //Las siguientes linea
                 String t1="";
                 for (int i=0; i<cont; i++){
                     t1+= "\t";
@@ -122,14 +122,26 @@ public class Creador {
                 fin+= t1 + linea+ "\n";
             }
             else{
-                if(linea.contains("}")){
+                if ((linea.contains(":") && linea.contains("case")) || linea.contains("default")){
                     cont=cont-1;
+                    String t1="";
+                    for (int i=0; i<cont; i++){
+                        t1+= "\t";
+                    }
+                    cont=cont+1;
+                    fin += t1 + linea + "\n";
                 }
-                String t1="";
-                for (int i=0; i<cont; i++){
-                    t1+= "\t";
+                else{
+                    if(linea.contains("}")){
+                        cont=cont-1;
+                    }
+                    String t1="";
+                    for (int i=0; i<cont; i++){
+                        t1+= "\t";
+                    }
+                    fin += t1 + linea + "\n";
                 }
-                fin += t1 + linea + "\n";
+
             }
         }
         return fin;
