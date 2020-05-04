@@ -41,8 +41,7 @@ END INTERFACE
 CALL Subrutina0Param ;
 CALL Subrutina1Param (34);
 CALL Subrutina3Param (i2, r1, c1);
-concatenacionStrings = 'comilla doble " dentro' + "comilla simple ' dentro" + 'comilla simple '' dentro'
-	+ "comilla doble "" dentro" + 'comilla doble " y simple '' dentro' + "comilla simple ' y doble "" dentro";
+concatenacionStrings = 'comilla doble " dentro' + "comilla simple ' dentro" + 'comilla simple '' dentro' + "comilla doble "" dentro" + 'comilla doble " y simple '' dentro' + "comilla simple ' y doble "" dentro";
 resultado_aritmetico1 = ( -45 + entero1) * entero2 - entero3 / entero4;
 otro_resultado_aritmetico = ( 123.456 * -00.69 + 45.07000 ) / (-123.456 + Funcion2Param ( Funcion1Param ( 34.2 ) , 34 ) 
 	* 123E456 ) + ( -64e-77 * -045e6 - 003E-35 ) * 1.23E4 + -000.64E-77 / -045.0e16 - 0.03E-35;

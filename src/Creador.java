@@ -80,19 +80,38 @@ public class Creador {
     //Este método se va a encargar de manejar las comillas de los STRING_CONST de fortran por comillas para el lenguaje C
     public String strConstComillas(String sConst){
         String cadenaCorrecta = "";
-        String s = sConst;
         if(sConst.contains ("+")){
             String[] separacion = sConst.split("\\+");
-            int ind = 0;
-            return  sConst ;
-        }
-        else{
-            cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
-            cadenaCorrecta = cadenaCorrecta.replaceAll("''","'");
+            for(int i=0; i<=separacion.length-1; i++){
+                if(separacion.length-1==i){
+                    cadenaCorrecta += SimpleDoble(separacion[i]);
+                }else{
+                    cadenaCorrecta += SimpleDoble(separacion[i])+ " + ";
+                }
+            }
             return  cadenaCorrecta ;
         }
-
+        else{
+            cadenaCorrecta += SimpleDoble(sConst);
+            return  cadenaCorrecta ;
+        }
     }
+
+    public String SimpleDoble(String s){
+
+        if(s.trim().charAt(0)=='\"'){
+            s = s.trim().replace("\"\"", "\\\"");
+            System.out.println(s);
+            return "\"" + s.substring(1, s.length()-1) + "\"";
+        }else{
+            s = s.trim().replace("''", "'");
+            s = s.replace("\"", "\\\"");
+            System.out.println(s);
+            return  "\"" + s.substring(1, s.length()-1) + "\"";
+        }
+    }
+
+
 
     //Metodo para tabular todo el String que reciba
     public String tabulacion(String t) {

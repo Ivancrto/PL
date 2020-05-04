@@ -87,6 +87,9 @@ public class Cabeceras {
     public void addArgValuesFun(String nombre,String tipo,String arg){  //Le asignamos un formato a los argumentos de la declaracion de funciones
 
         HashMap<String, String> cS = cabS.get (nombre);
+        if(cS.get (arg)==null){
+            System.out.println("El argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+nombre);
+        }
         String cadC = cS.get (arg);
         String corchetes="";
         String tipoAux=tipo;
@@ -118,9 +121,9 @@ public class Cabeceras {
                 int i = 0;
                 for (String args : argsOrd) {
                     if (i == (argsOrd.size () -1)) {   //Si se trata del ultimo elemento
-                        r +=  args + " );" + "\n";
+                        r +=  arguments.get(args) + " );" + "\n";
                     } else {
-                        r +=  args + ", " +
+                        r +=   arguments.get(args) + ", " +
                                 "" ;
                     }
                     i++;
