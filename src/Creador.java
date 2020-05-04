@@ -100,13 +100,11 @@ public class Creador {
     public String SimpleDoble(String s){
 
         if(s.trim().charAt(0)=='\"'){
-            s = s.trim().replace("\"\"", "\\\"");
-            System.out.println(s);
+            s = s.trim().replace("\"\"", "\\\"");        
             return "\"" + s.substring(1, s.length()-1) + "\"";
         }else{
             s = s.trim().replace("''", "'");
             s = s.replace("\"", "\\\"");
-            System.out.println(s);
             return  "\"" + s.substring(1, s.length()-1) + "\"";
         }
     }
