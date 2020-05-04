@@ -84,7 +84,7 @@ public class Creador {
         if(sConst.contains ("+")){
             String[] separacion = sConst.split("\\+");
             int ind = 0;
-            return  cadenaCorrecta ;
+            return  sConst ;
         }
         else{
             cadenaCorrecta = sConst.replaceAll("\\\\\"\\\\\"","\\\\\"");
