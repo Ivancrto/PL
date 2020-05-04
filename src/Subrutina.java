@@ -4,9 +4,11 @@ import java.util.List;
 public class Subrutina {
 
     private String subrutinas;
+    private boolean error;
 
     public Subrutina() {
         this.subrutinas = "";
+        this.error = false;
     }
 
     public String getSubrutinas() {
@@ -17,9 +19,14 @@ public class Subrutina {
         this.subrutinas = subrutinas;
     }
 
+    public boolean isError() {
+        return error;
+    }
+
     public void comprobacion(String uno, String dos){
         if(!(uno).equals(dos)){
             System.out.println("El nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
+            this.error = true;
         }
     }
     public String construirSubrutina(int esVoid, String ident, String paramlist, String dcllist, String sent, String sentlist, Cabeceras cab){

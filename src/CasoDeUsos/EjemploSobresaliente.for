@@ -19,22 +19,22 @@ INTERFACE
 	SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! Subrutina con 1 parametro de llamada
 		INTEGER , INTENT ( IN ) Sub1Param1 ;
 	END SUBROUTINE Subrutina1Param
-
+	
 	SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! Subrutina con 3 parametros de llamada
-		INTEGER , INTENT ( OUT ) Sub3Param1 ;
+		INTEGER , INTENT ( IN ) Sub3Param1 ;
 		REAL , INTENT ( OUT ) Sub3Param2 ;
 		CHARACTER , INTENT ( INOUT ) Sub3Param3 ;
 	END SUBROUTINE Subrutina3Param
 
 	FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
 		INTEGER :: Funcion1Param ;
-		REAL , INTENT ( IN ) Fun1Param1 ;
+		REAL , INTENT ( IN ) Fun1Param1 ; 
 	END FUNCTION IDENT
 
 	FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 ) ! Funcion con 2 parametros de llamada
 		REAL :: Funcion2Param ;
-		INTEGER , INTENT ( IN ) Fun2Param1 ;
-		CHARACTER (25) , INTENT ( IN ) Fun2Param2 ;
+		INTEGER , INTENT ( IN ) Fun2Param1 ; 
+		CHARACTER (25) , INTENT ( IN ) Fun2Param2 ; 
 	END FUNCTION IDENT
 END INTERFACE
 
@@ -44,7 +44,7 @@ CALL Subrutina3Param (i2, 87.4, c1);
 concatenacionStrings = 'comilla doble " dentro' + "comilla simple ' dentro" + 'comilla simple '' dentro'
 	+ "comilla doble "" dentro" + 'comilla doble " y simple '' dentro' + "comilla simple ' y doble "" dentro";
 resultado_aritmetico1 = ( -45 + entero1) * entero2 - entero3 / entero4;
-otro_resultado_aritmetico = ( 123.456 * -00.69 + 45.07000 ) / (-123.456 + Funcion2Param ( Funcion1Param ( 34.2 ) , 34 )
+otro_resultado_aritmetico = ( 123.456 * -00.69 + 45.07000 ) / (-123.456 + Funcion2Param ( Funcion1Param ( 34.2 ) , 34 ) 
 	* 123E456 ) + ( -64e-77 * -045e6 - 003E-35 ) * 1.23E4 + -000.64E-77 / -045.0e16 - 0.03E-35;
 
 END PROGRAM Programa
@@ -54,16 +54,16 @@ SUBROUTINE Subrutina0Param ! Subrutina sin parametros de llamada
 	INTEGER :: i1, i2=0, i3 ;
 	! Sentencias
 	i1 = b'011' + o'740' * o'101';
-	i3 = z'A34' - z'890' / z'106' + z'010';
+	i3 = z'A34' - z'890' / z'106' + z'010';	
 	CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
 END SUBROUTINE Subrutina0Param
 
 SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! Subrutina con 1 parametro de llamada
 	INTEGER , INTENT ( IN ) Sub1Param1 ;
-
+	
 	! Declaración de variables
 	REAL :: r1, r2=0.2, r3 ;
-
+	
 	! Sentencias
 	CALL Subrutina0Param;
 	r1 = Sub1Param1;
@@ -73,24 +73,24 @@ SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! Subrutina co
 	INTEGER , INTENT ( IN ) Sub3Param1 ;
 	REAL , INTENT ( OUT ) Sub3Param2 ;
 	CHARACTER , INTENT ( INOUT ) Sub3Param3 ;
-
+	
 	! Declaración de variables
 	INTEGER :: i1, i2=0, i3 ;
-
+	
 	! Sentencias
 	Sub3Param1 = Funcion1Param(i1);
 	CALL Subrutina1Param ( i2*i3 );
-	Sub3Param3 = Sub3Param1 + i1;
+	Sub3Param3 = Sub3Param1 + i1; 
 
 END SUBROUTINE Subrutina3Param
 
 FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
 	INTEGER :: Funcion1Param ;
-	REAL , INTENT ( IN ) Fun1Param1 ;
-
+	REAL , INTENT ( IN ) Fun1Param1 ; 
+	
 	! Declaración de variables
 	REAL :: r1, r2=0.2, r3 ;
-
+	
 	! Sentencias
 	CALL Subrutina0Param;
 	Funcion1Param = Sub1Param1;
@@ -98,11 +98,11 @@ END FUNCTION Funcion1Param
 
 FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 ) ! Funcion con 2 parametros de llamada
 	REAL :: Funcion2Param ;
-	INTEGER , INTENT ( IN ) Fun2Param1 ;
-	CHARACTER (25) , INTENT ( IN ) Fun2Param2 ;
+	INTEGER , INTENT ( IN ) Fun2Param1 ; 
+	CHARACTER (25) , INTENT ( IN ) Fun2Param2 ; 
 	! Declaración de variables
 	REAL :: r1, r2=0.2, r3 ;
-
+	
 	! Sentencias
 	CALL Subrutina0Param;
 	Funcion2Param = Sub1Param1;
@@ -133,7 +133,7 @@ SUBROUTINE PruebaIfs ! Subrutina sin parametros de llamada para probar ifs
 		CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
 		IF ( .TRUE. .OR. a<b .AND. b>c .EQV. c==d ) THEN
 			CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
-			concatenacionStrings = 'comilla doble " dentro' + "comilla simple ' dentro";
+			concatenacionStrings = 'comilla doble " dentro' + "comilla simple ' dentro";	
 		ELSE
 			CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
 			IF ( .TRUE. .OR. a<b .AND. b>c .EQV. c==d ) THEN
@@ -178,7 +178,7 @@ SUBROUTINE PruebaDOs ! Subrutina sin parametros de llamada para probar DOs
 		DO WHILE ( .TRUE. .OR. a<b .AND. b>c .EQV. c==d )
 			CALL PruebaIfs;
 			contador = contador + 1;
-		ENDDO
+		ENDDO	
 	ENDDO
 END SUBROUTINE PruebaDOs
 
@@ -217,7 +217,7 @@ SUBROUTINE PruebaSELECTs ! Subrutina sin parametros de llamada para probar SELEC
 			CALL Subrutina0Param;
 		CASE DEFAULT
 			CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
-			contador = contador + 1;
+			contador = contador + 1;	
 			CALL PruebaIfs;
 			CALL Subrutina0Param;
 	END SELECT

@@ -1,3 +1,5 @@
+import org.antlr.v4.runtime.CharStreams;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -12,7 +14,7 @@ public class Creador {
     private Subrutina subrutina;
     private String fusionFuncionSubrutina;
     private Principal principal;
-
+    public static String nameFichero;
 
     public Creador() {
         this.constantes = new Constante();
@@ -54,16 +56,19 @@ public class Creador {
     }
 
     public void crear(){
+        if(!cabecera.isError() || !subrutina.isError() || !funciones.isError()){
+            File file = new File(nameFichero.substring(0,nameFichero.indexOf("."))+".c");
+            FileWriter fr;
+            try {
+                fr = new FileWriter(file, true);
+                fr.write(tabulacion(constantes.getDefine() + "\n" + cabecera.toString() + "\n"+  fusionFuncionSubrutina + principal.getPrincipal() ));
+                fr.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
-        File file = new File("codigo.c");
-        FileWriter fr;
-        try {
-            fr = new FileWriter(file, true);
-            fr.write(tabulacion(constantes.getDefine() + "\n" + cabecera.toString() + "\n"+  fusionFuncionSubrutina + principal.getPrincipal() ));
-            fr.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+
     }
 
 

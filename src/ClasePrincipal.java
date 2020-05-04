@@ -16,10 +16,11 @@ public class ClasePrincipal {
 
         try{
 // Preparar el fichero de entrada para asignarlo al analizador léxico
+
             CharStream input = CharStreams.fromFileName(args[0]);
 // Crear el objeto correspondiente al analizador léxico con el fichero de entrada
             grupalLexer analex = new grupalLexer(input);
-
+            Creador.nameFichero = input.getSourceName().substring(input.getSourceName().lastIndexOf("\\")+1);
 
 
 // Identificar al analizador léxico como fuente de tokens para el sintactico

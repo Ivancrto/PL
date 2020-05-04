@@ -6,8 +6,9 @@ public class Cabeceras {
     public List<LinkedList<String>> argsOrdenador= new LinkedList<> ();   //La posicion correspponde con la de la funcion en cabOrdenadas
     public HashMap<String,HashMap<String,String>> cabS= new HashMap<> (); //K= nombre subrutina V=HashMap de argumentos-->(k=nombreArgumento v=traduccionC)
     public HashMap<String,String> tiposFun= new HashMap<> (); //Asocia el nombre de la funcion con su tipo
-
+    private boolean error;
     public Cabeceras(){
+        this.error = false;
     }
 
 
@@ -29,6 +30,7 @@ public class Cabeceras {
     public void compruebaCabSub(String nombre, String end){
         if(!nombre.equals (end)){
             System.out.println("El nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
+            this.error = true;
         }
     }
     public void addArgValuesSub(String nombre, String tipo, String inOut,String arg){   //Definimos el estilo de los argumentos de una subrutina
@@ -38,6 +40,7 @@ public class Cabeceras {
         //Comprobamos que el valor declarado coincide con una entrada de el mapa que contiene los argumentos de la cabecera
         if(cadC==null){
             System.out.println ("El argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ nombre);
+            this.error = true;
         }
         if((tipo).startsWith("char")){
             tipoAux="char ";
@@ -72,9 +75,11 @@ public class Cabeceras {
 
         if(!(nombre).equals(nombreTipo)){
             System.out.println("El nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
+            this.error = true;
         }
         else if((cabS.get (nombreTipo))==null){
             System.out.println("El nombre de la funcion "+nombreTipo+" no existe.");
+            this.error = true;
         }
         tiposFun.put (nombre,tipo);
     }
@@ -124,6 +129,9 @@ public class Cabeceras {
         }
 
         return r;
+    }
+    public boolean isError() {
+        return error;
     }
 
     public List<String> getCabOrdenadas() {
