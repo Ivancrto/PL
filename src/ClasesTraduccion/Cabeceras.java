@@ -1,3 +1,5 @@
+package ClasesTraduccion;
+
 import java.util.*;
 
 public class Cabeceras {
@@ -7,6 +9,7 @@ public class Cabeceras {
     public HashMap<String,HashMap<String,String>> cabS= new HashMap<> (); //K= nombre subrutina V=HashMap de argumentos-->(k=nombreArgumento v=traduccionC)
     public HashMap<String,String> tiposFun= new HashMap<> (); //Asocia el nombre de la funcion con su tipo
     private boolean error;
+
     public Cabeceras(){
         this.error = false;
     }
@@ -27,19 +30,21 @@ public class Cabeceras {
 
     }   //Añadimos una entrada nueva a la tabla hash de cabeceras
 
-    public void compruebaCabSub(String nombre, String end){
+    public void compruebaCabSub(String nombre, String end, int linea, int columna){
         if(!nombre.equals (end)){
-            System.out.println("El nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
             this.error = true;
         }
     }
-    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg){   //Definimos el estilo de los argumentos de una subrutina
+
+    static int contadorS = 0;
+    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg, int linea, int columna){   //Definimos el estilo de los argumentos de una subrutina
         String tipoAux=tipo;
         HashMap<String, String> argsS= cabS.get (nombre);
         String cadC = argsS.get(arg);
         //Comprobamos que el valor declarado coincide con una entrada de el mapa que contiene los argumentos de la cabecera
         if(cadC==null){
-            System.out.println ("El argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ nombre);
+            System.out.println ("Error en la linea "+  linea + " columna "+ columna + ",el argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ nombre);
             this.error = true;
         }
         if((tipo).startsWith("char")){
@@ -48,6 +53,18 @@ public class Cabeceras {
         cadC=tipoAux+inOut+arg;
         argsS.put (arg,cadC);
         cabS.put (nombre,argsS);
+
+        int p = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size();
+        if(!argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS).equals(arg.trim())){
+            String prueba = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la subrutina " + nombre + ", el argumento " + nombre + " no esta en el orden correcto");
+            this.error=true;
+        }
+        contadorS++;
+        if(contadorS>=argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size()){
+            contadorS=0;
+        }
+
 
     }
 
@@ -73,24 +90,27 @@ public class Cabeceras {
         argsOrdenador.add (pos,new LinkedList<> ());
     }
 
-    public void addTipoFun(String nombre, String tipo, String nombreTipo){
+    public void addTipoFun(String nombre, String tipo, String nombreTipo, int linea, int columna){
 
         if(!(nombre).equals(nombreTipo)){
-            System.out.println("El nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + "el nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
             this.error = true;
         }
         else if((cabS.get (nombreTipo))==null){
-            System.out.println("El nombre de la funcion "+nombreTipo+" no existe.");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el nombre de la funcion "+nombreTipo+" no existe.");
             this.error = true;
         }
         tiposFun.put (nombre,tipo);
+
     }
 
-    public void addArgValuesFun(String nombre,String tipo,String arg){  //Le asignamos un formato a los argumentos de la declaracion de funciones
+    static int contador = 0;
+    public void addArgValuesFun(String nombre,String tipo,String arg, int linea, int columna){  //Le asignamos un formato a los argumentos de la declaracion de funciones
 
         HashMap<String, String> cS = cabS.get (nombre);
         if(cS.get (arg)==null){
-            System.out.println("El argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+nombre);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+nombre);
+            this.error = true;
         }
         String cadC = cS.get (arg);
         String corchetes="";
@@ -101,6 +121,18 @@ public class Cabeceras {
         }
         cadC=tipo + arg +corchetes;
         cS.put (arg,cadC);
+
+        int p = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size();
+        if(!argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contador).equals(arg.trim())){
+            String prueba = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contador);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la funcion " + nombre + ", el argumento " + nombre + " no esta en el orden correcto");
+            this.error=true;
+        }
+        contador++;
+        if(contador>=argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size()){
+            contador=0;
+        }
+
     }
 
     @Override

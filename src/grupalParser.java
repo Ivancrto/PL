@@ -132,7 +132,7 @@ public class grupalParser extends Parser {
 
 
 
-	    Creador creador = new Creador();
+	    ClasesTraduccion.Creador creador = new ClasesTraduccion.Creador();
 
 
 	public grupalParser(TokenStream input) {
@@ -1119,7 +1119,7 @@ public class grupalParser extends Parser {
 				{
 				setState(239);
 				match(T__8);
-				((TipoContext)_localctx).t = "int "; ((TipoContext)_localctx).cl = "int";
+				((TipoContext)_localctx).t = "int "; ((TipoContext)_localctx).cl = "";
 				}
 				break;
 			case T__9:
@@ -1127,7 +1127,7 @@ public class grupalParser extends Parser {
 				{
 				setState(241);
 				match(T__9);
-				((TipoContext)_localctx).t = "float "; ((TipoContext)_localctx).cl = "float";
+				((TipoContext)_localctx).t = "float "; ((TipoContext)_localctx).cl = "";
 				}
 				break;
 			case T__10:
@@ -1437,16 +1437,16 @@ public class grupalParser extends Parser {
 			((DecprocContext)_localctx).id1 = match(IDENT);
 			creador.getCabecera().addSub((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null)); 
 			setState(278);
-			formal_paramlist((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null),true);
+			formal_paramlist((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null),1);
 			setState(279);
-			dec_s_paramlist((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null));
+			dec_s_paramlist((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null),1);
 			setState(280);
 			match(T__2);
 			setState(281);
 			match(T__13);
 			setState(282);
 			((DecprocContext)_localctx).id2 = match(IDENT);
-			creador.getCabecera().compruebaCabSub((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null),(((DecprocContext)_localctx).id2!=null?((DecprocContext)_localctx).id2.getText():null)); 
+			creador.getCabecera().compruebaCabSub((((DecprocContext)_localctx).id1!=null?((DecprocContext)_localctx).id1.getText():null),(((DecprocContext)_localctx).id2!=null?((DecprocContext)_localctx).id2.getText():null),((DecprocContext)_localctx).id1.getLine(),  ((DecprocContext)_localctx).id1.getCharPositionInLine()); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -1462,13 +1462,13 @@ public class grupalParser extends Parser {
 
 	public static class Formal_paramlistContext extends ParserRuleContext {
 		public String id;
-		public boolean declaration;
+		public int declaration;
 		public int esVoid;
 		public NomparamlistContext nomparamlist() {
 			return getRuleContext(NomparamlistContext.class,0);
 		}
 		public Formal_paramlistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Formal_paramlistContext(ParserRuleContext parent, int invokingState, String id, boolean declaration) {
+		public Formal_paramlistContext(ParserRuleContext parent, int invokingState, String id, int declaration) {
 			super(parent, invokingState);
 			this.id = id;
 			this.declaration = declaration;
@@ -1484,7 +1484,7 @@ public class grupalParser extends Parser {
 		}
 	}
 
-	public final Formal_paramlistContext formal_paramlist(String id,boolean declaration) throws RecognitionException {
+	public final Formal_paramlistContext formal_paramlist(String id,int declaration) throws RecognitionException {
 		Formal_paramlistContext _localctx = new Formal_paramlistContext(_ctx, getState(), id, declaration);
 		enterRule(_localctx, 38, RULE_formal_paramlist);
 		try {
@@ -1534,14 +1534,14 @@ public class grupalParser extends Parser {
 
 	public static class NomparamlistContext extends ParserRuleContext {
 		public String id;
-		public boolean declaration;
+		public int declaration;
 		public Token IDENT;
 		public TerminalNode IDENT() { return getToken(grupalParser.IDENT, 0); }
 		public NomparamlistpContext nomparamlistp() {
 			return getRuleContext(NomparamlistpContext.class,0);
 		}
 		public NomparamlistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public NomparamlistContext(ParserRuleContext parent, int invokingState, String id, boolean declaration) {
+		public NomparamlistContext(ParserRuleContext parent, int invokingState, String id, int declaration) {
 			super(parent, invokingState);
 			this.id = id;
 			this.declaration = declaration;
@@ -1557,7 +1557,7 @@ public class grupalParser extends Parser {
 		}
 	}
 
-	public final NomparamlistContext nomparamlist(String id,boolean declaration) throws RecognitionException {
+	public final NomparamlistContext nomparamlist(String id,int declaration) throws RecognitionException {
 		NomparamlistContext _localctx = new NomparamlistContext(_ctx, getState(), id, declaration);
 		enterRule(_localctx, 40, RULE_nomparamlist);
 		try {
@@ -1568,11 +1568,11 @@ public class grupalParser extends Parser {
 			setState(294);
 			nomparamlistp(_localctx.id,_localctx.declaration);
 
-			    if(_localctx.declaration){   //Se trata de una declaracion de cabecera en la interfaz
+			    if(_localctx.declaration==1){   //Se trata de una declaracion de cabecera en la interfaz
 			        creador.getCabecera().addArgSubFun(_localctx.id,(((NomparamlistContext)_localctx).IDENT!=null?((NomparamlistContext)_localctx).IDENT.getText():null));
 			    }
 			    else{   //Implementacion
-			        creador.getFunciones().comprobacionArgumentos(_localctx.id,(((NomparamlistContext)_localctx).IDENT!=null?((NomparamlistContext)_localctx).IDENT.getText():null),creador.getCabecera());
+			        creador.getFunciones().comprobacionArgumentos(_localctx.id,(((NomparamlistContext)_localctx).IDENT!=null?((NomparamlistContext)_localctx).IDENT.getText():null),creador.getCabecera(),((NomparamlistContext)_localctx).IDENT.getLine(),  ((NomparamlistContext)_localctx).IDENT.getCharPositionInLine());
 			    }
 
 			}
@@ -1590,12 +1590,12 @@ public class grupalParser extends Parser {
 
 	public static class NomparamlistpContext extends ParserRuleContext {
 		public String id;
-		public boolean declaration;
+		public int declaration;
 		public NomparamlistContext nomparamlist() {
 			return getRuleContext(NomparamlistContext.class,0);
 		}
 		public NomparamlistpContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public NomparamlistpContext(ParserRuleContext parent, int invokingState, String id, boolean declaration) {
+		public NomparamlistpContext(ParserRuleContext parent, int invokingState, String id, int declaration) {
 			super(parent, invokingState);
 			this.id = id;
 			this.declaration = declaration;
@@ -1611,7 +1611,7 @@ public class grupalParser extends Parser {
 		}
 	}
 
-	public final NomparamlistpContext nomparamlistp(String id,boolean declaration) throws RecognitionException {
+	public final NomparamlistpContext nomparamlistp(String id,int declaration) throws RecognitionException {
 		NomparamlistpContext _localctx = new NomparamlistpContext(_ctx, getState(), id, declaration);
 		enterRule(_localctx, 42, RULE_nomparamlistp);
 		try {
@@ -1649,6 +1649,7 @@ public class grupalParser extends Parser {
 
 	public static class Dec_s_paramlistContext extends ParserRuleContext {
 		public String id;
+		public int declaration;
 		public String re;
 		public TipoContext tipo;
 		public TipoparamContext tipoparam;
@@ -1664,9 +1665,10 @@ public class grupalParser extends Parser {
 			return getRuleContext(Dec_s_paramlistContext.class,0);
 		}
 		public Dec_s_paramlistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Dec_s_paramlistContext(ParserRuleContext parent, int invokingState, String id) {
+		public Dec_s_paramlistContext(ParserRuleContext parent, int invokingState, String id, int declaration) {
 			super(parent, invokingState);
 			this.id = id;
+			this.declaration = declaration;
 		}
 		@Override public int getRuleIndex() { return RULE_dec_s_paramlist; }
 		@Override
@@ -1679,8 +1681,8 @@ public class grupalParser extends Parser {
 		}
 	}
 
-	public final Dec_s_paramlistContext dec_s_paramlist(String id) throws RecognitionException {
-		Dec_s_paramlistContext _localctx = new Dec_s_paramlistContext(_ctx, getState(), id);
+	public final Dec_s_paramlistContext dec_s_paramlist(String id,int declaration) throws RecognitionException {
+		Dec_s_paramlistContext _localctx = new Dec_s_paramlistContext(_ctx, getState(), id, declaration);
 		enterRule(_localctx, 44, RULE_dec_s_paramlist);
 		try {
 			setState(315);
@@ -1705,9 +1707,13 @@ public class grupalParser extends Parser {
 				((Dec_s_paramlistContext)_localctx).IDENT = match(IDENT);
 				setState(309);
 				match(T__1);
-				creador.getCabecera().addArgValuesSub(_localctx.id,((Dec_s_paramlistContext)_localctx).tipo.t, ((Dec_s_paramlistContext)_localctx).tipoparam.c,(((Dec_s_paramlistContext)_localctx).IDENT!=null?((Dec_s_paramlistContext)_localctx).IDENT.getText():null));
+
+				    if(_localctx.declaration==1){
+				        creador.getCabecera().addArgValuesSub(_localctx.id,((Dec_s_paramlistContext)_localctx).tipo.t, ((Dec_s_paramlistContext)_localctx).tipoparam.c,(((Dec_s_paramlistContext)_localctx).IDENT!=null?((Dec_s_paramlistContext)_localctx).IDENT.getText():null), ((Dec_s_paramlistContext)_localctx).IDENT.getLine(),  ((Dec_s_paramlistContext)_localctx).IDENT.getCharPositionInLine());
+				    }
+				    
 				setState(311);
-				dec_s_paramlist(_localctx.id);
+				dec_s_paramlist(_localctx.id, _localctx.declaration);
 				((Dec_s_paramlistContext)_localctx).re = "";
 				}
 				break;
@@ -1838,7 +1844,7 @@ public class grupalParser extends Parser {
 			setState(328);
 			match(T__11);
 			setState(329);
-			nomparamlist((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),true);
+			nomparamlist((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),1);
 			setState(330);
 			match(T__12);
 			setState(331);
@@ -1857,7 +1863,7 @@ public class grupalParser extends Parser {
 			match(T__18);
 			setState(338);
 			((DecfunContext)_localctx).id3 = match(IDENT);
-			creador.getCabecera().addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null));
+			creador.getCabecera().addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null),((DecfunContext)_localctx).id1.getLine(),  ((DecfunContext)_localctx).id1.getCharPositionInLine());
 			}
 		}
 		catch (RecognitionException re) {
@@ -1925,7 +1931,7 @@ public class grupalParser extends Parser {
 				((Dec_f_paramlistContext)_localctx).IDENT = match(IDENT);
 				setState(348);
 				match(T__1);
-				creador.getCabecera().addArgValuesFun(_localctx.id,((Dec_f_paramlistContext)_localctx).tipo.t,(((Dec_f_paramlistContext)_localctx).IDENT!=null?((Dec_f_paramlistContext)_localctx).IDENT.getText():null));
+				creador.getCabecera().addArgValuesFun(_localctx.id,((Dec_f_paramlistContext)_localctx).tipo.t,(((Dec_f_paramlistContext)_localctx).IDENT!=null?((Dec_f_paramlistContext)_localctx).IDENT.getText():null),((Dec_f_paramlistContext)_localctx).IDENT.getLine(),  ((Dec_f_paramlistContext)_localctx).IDENT.getCharPositionInLine());
 				setState(350);
 				dec_f_paramlist(_localctx.id);
 				((Dec_f_paramlistContext)_localctx).re = "";
@@ -3029,9 +3035,9 @@ public class grupalParser extends Parser {
 			setState(511);
 			((CodprocContext)_localctx).id1 = match(IDENT);
 			setState(512);
-			((CodprocContext)_localctx).formal_paramlist = formal_paramlist((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),false);
+			((CodprocContext)_localctx).formal_paramlist = formal_paramlist((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),0);
 			setState(513);
-			((CodprocContext)_localctx).dec_s_paramlist = dec_s_paramlist((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null));
+			((CodprocContext)_localctx).dec_s_paramlist = dec_s_paramlist((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),0);
 			setState(514);
 			((CodprocContext)_localctx).dcllist = dcllist();
 			setState(515);
@@ -3046,7 +3052,7 @@ public class grupalParser extends Parser {
 			((CodprocContext)_localctx).id2 = match(IDENT);
 
 
-			    creador.getSubrutina().comprobacion((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null));//Comprobacion:
+			    creador.getSubrutina().comprobacion((((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),(((CodprocContext)_localctx).id2!=null?((CodprocContext)_localctx).id2.getText():null),((CodprocContext)_localctx).id1.getLine(),  ((CodprocContext)_localctx).id1.getCharPositionInLine());//Comprobacion:
 			    creador.fusion(creador.getSubrutina().construirSubrutina(((CodprocContext)_localctx).formal_paramlist.esVoid,(((CodprocContext)_localctx).id1!=null?((CodprocContext)_localctx).id1.getText():null),((CodprocContext)_localctx).dec_s_paramlist.re ,((CodprocContext)_localctx).dcllist.s, ((CodprocContext)_localctx).sent.re, ((CodprocContext)_localctx).sentlist.re,creador.getCabecera()));
 
 
@@ -3127,7 +3133,7 @@ public class grupalParser extends Parser {
 			setState(524);
 			match(T__11);
 			setState(525);
-			nomparamlist((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),false);
+			nomparamlist((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),0);
 			setState(526);
 			match(T__12);
 			setState(527);
@@ -3162,7 +3168,7 @@ public class grupalParser extends Parser {
 			((CodfunContext)_localctx).id4 = match(IDENT);
 
 
-			    creador.getFunciones().comprobacion((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null),(((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null),(((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null));//Comprobacion:
+			    creador.getFunciones().comprobacion((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),(((CodfunContext)_localctx).id2!=null?((CodfunContext)_localctx).id2.getText():null),(((CodfunContext)_localctx).id3!=null?((CodfunContext)_localctx).id3.getText():null),(((CodfunContext)_localctx).id4!=null?((CodfunContext)_localctx).id4.getText():null),((CodfunContext)_localctx).id1.getLine(),  ((CodfunContext)_localctx).id1.getCharPositionInLine());//Comprobacion:
 			    creador.fusion(creador.getFunciones().construirFuncion( ((CodfunContext)_localctx).tipo.t, (((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null), ((CodfunContext)_localctx).dec_f_paramlist.re, ((CodfunContext)_localctx).dcllist.s, ((CodfunContext)_localctx).sent.re, ((CodfunContext)_localctx).sentlist.re,  ((CodfunContext)_localctx).exp.re, creador.getCabecera()));
 
 

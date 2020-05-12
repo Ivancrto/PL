@@ -1,3 +1,5 @@
+package ClasesTraduccion;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,32 +26,32 @@ public class Funciones {
         return error;
     }
 
-    public void comprobacion(String uno, String dos, String tres, String cuatro){
+    public void comprobacion(String uno, String dos, String tres, String cuatro, int linea, int columna){
         if(!(uno).equals(cuatro)){
-            System.out.println("El nombre de la implementacion de la funcion "+uno+ " no coincide con el nombre usado en el cierre "+cuatro);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el nombre de la implementacion de la funcion "+uno+ " no coincide con el nombre usado en el cierre "+cuatro);
             this.error = true;
         }
         //Tercera comprobacion:
         if(!(uno).equals(dos)){
-            System.out.println("El nombre de la funcion "+uno+" y el nombre asociado al tipo devuelto en su implementacion "+dos+" no coinciden con los declarados en la interfaz.");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el nombre de la funcion "+uno+" y el nombre asociado al tipo devuelto en su implementacion "+dos+" no coinciden con los declarados en la interfaz.");
             this.error = true;
         }
         //Tercera comprobacion parte dos:
         if(!(uno).equals(tres)){
-            System.out.println("La variable de valor de retorno "+tres+" no coincide con el nombre de la funcion "+uno);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " la variable de valor de retorno "+tres+" no coincide con el nombre de la funcion "+uno);
             this.error = true;
         }
     }
-    public void comprobacionArgumentos(String nombreF, String nombreA, Cabeceras cab){
+    public void comprobacionArgumentos(String nombreF, String nombreA, Cabeceras cab, int linea, int columna){
         if(cab.getCabS().get(nombreF)==null){
-            System.out.println("No se declaro la función "+ nombreF);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + "no se declaro la función "+ nombreF);
             this.error = true;
         }
         if(cab.getCabS().get(nombreF)==null){
-            System.out.println("La función " + nombreF + " no fue declarado en la cabecera");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + "la función " + nombreF + " no fue declarado en la cabecera");
             this.error = true;
         } else if(cab.getCabS().get(nombreF).get(nombreA)==null){
-            System.out.println("El argumento " + nombreA + " no fue declarado en la cabecera de " + nombreF  );
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + "el argumento " + nombreA + " no fue declarado en la cabecera de " + nombreF  );
             this.error = true;
         }
     }

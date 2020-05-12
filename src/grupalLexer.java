@@ -113,7 +113,7 @@ public class grupalLexer extends Lexer {
 
 
 
-	    Creador creador = new Creador();
+	    ClasesTraduccion.Creador creador = new ClasesTraduccion.Creador();
 
 
 

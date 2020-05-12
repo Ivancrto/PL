@@ -1,9 +1,8 @@
-import org.antlr.v4.runtime.CharStreams;
+package ClasesTraduccion;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 
 public class Creador {
 
@@ -56,8 +55,8 @@ public class Creador {
     }
 
     public void crear(){
-        if(!cabecera.isError() || !subrutina.isError() || !funciones.isError()){
-            File file = new File(nameFichero.substring(0,nameFichero.indexOf("."))+".c");
+        if(!cabecera.isError() && !subrutina.isError() && !funciones.isError()){
+            File file = new File("src/ResultadosTraduccion/" + nameFichero.substring(0,nameFichero.indexOf("."))+".c");
             file.delete();
             FileWriter fr;
             try {

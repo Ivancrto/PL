@@ -1,4 +1,5 @@
-import java.util.HashMap;
+package ClasesTraduccion;
+
 import java.util.List;
 
 public class Subrutina {
@@ -23,9 +24,9 @@ public class Subrutina {
         return error;
     }
 
-    public void comprobacion(String uno, String dos){
+    public void comprobacion(String uno, String dos, int linea, int columna){
         if(!(uno).equals(dos)){
-            System.out.println("El nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + "El nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
             this.error = true;
         }
     }

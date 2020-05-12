@@ -13,14 +13,14 @@ INTEGER , PARAMETER :: cte1 = 23, cte2 = 04; ! Contantes enteras
 REAL , PARAMETER :: cte3 = 56.34 ; ! Contantes reales
 
 INTERFACE
-	SUBROUTINE Subrutina0Param ! Subrutina sin parametros de llamada
+	SUBROUTINE Subrutina0Param ! ClasesTraduccion.Subrutina sin parametros de llamada
 	END SUBROUTINE Subrutina0Param
 
-	SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! Subrutina con 1 parametro de llamada
+	SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! ClasesTraduccion.Subrutina con 1 parametro de llamada
 		INTEGER , INTENT ( IN ) Sub1Param1 ;
 	END SUBROUTINE Subrutina1Param
 	
-	SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! Subrutina con 3 parametros de llamada
+	SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! ClasesTraduccion.Subrutina con 3 parametros de llamada
 		INTEGER , INTENT ( IN ) Sub3Param1 ;
 		REAL , INTENT ( OUT ) Sub3Param2 ;
 		CHARACTER , INTENT ( INOUT ) Sub3Param3 ;
@@ -34,7 +34,7 @@ INTERFACE
 	FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 ) ! Funcion con 2 parametros de llamada
 		REAL :: Funcion2Param ;
 		INTEGER , INTENT ( IN ) Fun2Param1 ;
-		CHARACTER (25) , INTENT ( IN ) Fun2Param2 ; 
+		CHARACTER (25) , INTENT ( IN ) Fun2Param2 ;
 	END FUNCTION Funcion2Param
 END INTERFACE
 
@@ -48,7 +48,7 @@ otro_resultado_aritmetico = ( 123.456 * -00.69 + 45.07000 ) / (-123.456 + Funcio
 
 END PROGRAM Programa
 
-SUBROUTINE Subrutina0Param ! Subrutina sin parametros de llamada
+SUBROUTINE Subrutina0Param ! ClasesTraduccion.Subrutina sin parametros de llamada
 	! Declaración de variables
 	INTEGER :: i1, i2=0, i3 ;
 	! Sentencias
@@ -57,7 +57,7 @@ SUBROUTINE Subrutina0Param ! Subrutina sin parametros de llamada
 	CALL Subrutina1Param ( Funcion1Param(i1)+i2*i3 );
 END SUBROUTINE Subrutina0Param
 
-SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! Subrutina con 1 parametro de llamada
+SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! ClasesTraduccion.Subrutina con 1 parametro de llamada
 	INTEGER , INTENT ( IN ) Sub1Param1 ;
 	
 	! Declaración de variables
@@ -68,7 +68,7 @@ SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! Subrutina con 1 parametro de llamada
 	r1 = Sub1Param1;
 END SUBROUTINE Subrutina1Param
 
-SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! Subrutina con 3 parametros de llamada
+SUBROUTINE Subrutina3Param ( Sub3Param1, Sub3Param2, Sub3Param3 ) ! ClasesTraduccion.Subrutina con 3 parametros de llamada
 	INTEGER , INTENT ( IN ) Sub3Param1 ;
 	REAL , INTENT ( OUT ) Sub3Param2 ;
 	CHARACTER , INTENT ( INOUT ) Sub3Param3 ;
@@ -107,7 +107,7 @@ FUNCTION Funcion2Param ( Fun2Param1, Fun2Param2 ) ! Funcion con 2 parametros de 
 	Funcion2Param = Sub1Param1;
 END FUNCTION Funcion2Param
 
-SUBROUTINE PruebaIfs ! Subrutina sin parametros de llamada para probar ifs
+SUBROUTINE PruebaIfs ! ClasesTraduccion.Subrutina sin parametros de llamada para probar ifs
 	! Declaración de variables
 	INTEGER :: i1, i2=0, i3 ;
 
@@ -143,7 +143,7 @@ SUBROUTINE PruebaIfs ! Subrutina sin parametros de llamada para probar ifs
 	ENDIF
 END SUBROUTINE PruebaIfs
 
-SUBROUTINE PruebaDOs ! Subrutina sin parametros de llamada para probar DOs
+SUBROUTINE PruebaDOs ! ClasesTraduccion.Subrutina sin parametros de llamada para probar DOs
 	! Declaración de variables
 	INTEGER :: i1, i2=0, i3 ;
 	a = 0;
@@ -181,7 +181,7 @@ SUBROUTINE PruebaDOs ! Subrutina sin parametros de llamada para probar DOs
 	ENDDO
 END SUBROUTINE PruebaDOs
 
-SUBROUTINE PruebaSELECTs ! Subrutina sin parametros de llamada para probar SELECT
+SUBROUTINE PruebaSELECTs ! ClasesTraduccion.Subrutina sin parametros de llamada para probar SELECT
 	! Declaración de variables
 	INTEGER :: i1, i2=0, i3 ;
 
