@@ -44,7 +44,7 @@ public class Cabeceras {
         String cadC = argsS.get(arg);
         //Comprobamos que el valor declarado coincide con una entrada de el mapa que contiene los argumentos de la cabecera
         if(cadC==null){
-            System.out.println ("Error en la linea "+  linea + " columna "+ columna + ",el argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ nombre);
+            System.out.println ("Error en la linea "+  linea + " columna "+ columna + ",el argumento "+ arg+ " no esta declarado en la cabecera de la subrutina "+ arg);
             this.error = true;
         }
         if((tipo).startsWith("char")){
@@ -109,7 +109,7 @@ public class Cabeceras {
 
         HashMap<String, String> cS = cabS.get (nombre);
         if(cS.get (arg)==null){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+nombre);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+arg);
             this.error = true;
         }
         String cadC = cS.get (arg);
