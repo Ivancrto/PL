@@ -26,7 +26,7 @@ public class Subrutina {
 
     public void comprobacion(String uno, String dos, int linea, int columna){
         if(!(uno).equals(dos)){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna + "El nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
             this.error = true;
         }
     }

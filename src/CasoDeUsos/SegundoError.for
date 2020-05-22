@@ -1,5 +1,5 @@
 !------------------------------------
-! Tercer Caso de Error
+! Segundo Caso de Error
 !------------------------------------
 PROGRAM Programa ;
 
@@ -19,10 +19,9 @@ INTERFACE
 	END SUBROUTINE Subrutina1Param
 
 	FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
-		INTEGER :: F1;
+		INTEGER :: Funcion1Param ;
 		REAL , INTENT ( IN ) Fun1Param1 ;
-	END FUNCTION Funcion1Param
-
+	END FUNCTION F !ERROR
 
 END INTERFACE
 
@@ -36,7 +35,7 @@ END PROGRAM Programa
 
 
 FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
-	INTEGER :: Fu1;
+	INTEGER :: Funcion1Param ;
 	REAL , INTENT ( IN ) Fun1Param1 ;
 
 	! Declaración de variables
@@ -45,5 +44,5 @@ FUNCTION Funcion1Param ( Fun1Param1 ) ! Funcion con 1 parametro de llamada
 	! Sentencias
 	CALL Subrutina0Param;
 	Funcion1Param = Sub1Param1;
-END FUNCTION Funcion1Param
-
+	!ERROR END FUNCTION F1
+END FUNCTION F1

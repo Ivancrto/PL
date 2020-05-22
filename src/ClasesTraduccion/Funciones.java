@@ -51,7 +51,7 @@ public class Funciones {
             System.out.println("Error en la linea "+  linea + " columna "+ columna + "la función " + nombreF + " no fue declarado en la cabecera");
             this.error = true;
         } else if(cab.getCabS().get(nombreF).get(nombreA)==null){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna + "el argumento " + nombreA + " no fue declarado en la cabecera de " + nombreF  );
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " el argumento " + nombreA + " no fue declarado en la cabecera de " + nombreF  );
             this.error = true;
         }
     }
