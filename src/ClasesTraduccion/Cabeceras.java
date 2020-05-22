@@ -16,16 +16,12 @@ public class Cabeceras {
 
 
     public void addSub(String nombre){
-        if(cabS.get (nombre)!=null){  //Si se trata de la implementacion  --> PARTE DE IVAN
-
-        }
-        else{
+        if(cabS.get (nombre)==null){
             HashMap mapa = new HashMap<String, String>();
             cabS.put (nombre,mapa);
             cabOrdenadas.add (nombre);
             int pos=cabOrdenadas.indexOf (nombre);
             argsOrdenador.add (pos,new LinkedList<> ());
-
         }
 
     }   //Añadimos una entrada nueva a la tabla hash de cabeceras
