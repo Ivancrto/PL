@@ -120,7 +120,7 @@ tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
 //Falta comprobar que la ultima sentencia tiene el valor de IDENT
-decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,1] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id2.text,$id1.getLine(),  $id1.getCharPositionInLine());};
+decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,1] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id3.text, $id2.text,$id1.getLine(),  $id1.getCharPositionInLine());};
 dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {creador.getCabecera().addArgValuesFun($id,$tipo.t,$IDENT.text,$IDENT.getLine(),  $IDENT.getCharPositionInLine());} dec_f_paramlist[$id] {$re="";}  |{$re="";} ;
 
 

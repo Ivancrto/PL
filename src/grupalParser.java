@@ -1863,7 +1863,7 @@ public class grupalParser extends Parser {
 			match(T__18);
 			setState(338);
 			((DecfunContext)_localctx).id3 = match(IDENT);
-			creador.getCabecera().addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null),((DecfunContext)_localctx).id1.getLine(),  ((DecfunContext)_localctx).id1.getCharPositionInLine());
+			creador.getCabecera().addTipoFun((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),((DecfunContext)_localctx).tipo.t,(((DecfunContext)_localctx).id3!=null?((DecfunContext)_localctx).id3.getText():null), (((DecfunContext)_localctx).id2!=null?((DecfunContext)_localctx).id2.getText():null),((DecfunContext)_localctx).id1.getLine(),  ((DecfunContext)_localctx).id1.getCharPositionInLine());
 			}
 		}
 		catch (RecognitionException re) {

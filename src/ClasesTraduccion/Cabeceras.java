@@ -37,6 +37,7 @@ public class Cabeceras {
         }
     }
 
+
     static int contadorS = 0;
     public void addArgValuesSub(String nombre, String tipo, String inOut,String arg, int linea, int columna){   //Definimos el estilo de los argumentos de una subrutina
         String tipoAux=tipo;
@@ -90,8 +91,12 @@ public class Cabeceras {
         argsOrdenador.add (pos,new LinkedList<> ());
     }
 
-    public void addTipoFun(String nombre, String tipo, String nombreTipo, int linea, int columna){
+    public void addTipoFun(String nombre, String tipo, String end, String nombreTipo, int linea, int columna){
 
+        if(!nombre.equals(end)){
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la declaracion de la funcion "+nombre+ " no coincide con el nombre usado en el cierre "+end);
+            this.error = true;
+        }
         if(!(nombre).equals(nombreTipo)){
             System.out.println("Error en la linea "+  linea + " columna "+ columna + "el nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
             this.error = true;
