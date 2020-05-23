@@ -25,11 +25,12 @@ public class Constante {
         return allConstantes;
     }
 
-
+    //Crea el string define con su nombre y valor cuando solo hay 1
     public void addConstante(String nombre, String valor){
         constantes = "#define " + nombre + " " + valor + "\n" + constantes;
         allConstantes.add(nombre);
     }
+    //Cuando le llega un lista de constantes, este metodo separa las contantes y las escribe separadas en distintos define
     public void addConstante(String conjuntoConstante){
         String[] parts = conjuntoConstante.split(",");
         String cAux = "";

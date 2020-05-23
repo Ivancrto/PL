@@ -29,5 +29,5 @@ SUBROUTINE Subrutina1Param ( Sub1Param1 ) ! ClasesTraduccion.Subrutina con 1 par
     ! Sentencias
     CALL Subrutina0Param;
     r1 = Sub1Param1;
-    !ERROR en END SUBROUTINE S
-END SUBROUTINE S
+
+END SUBROUTINE S !ERROR en END SUBROUTINE S
