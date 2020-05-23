@@ -4,17 +4,18 @@ import java.util.*;
 
 public class Cabeceras {
 
-    public List<String> cabOrdenadas= new LinkedList<> ();
+    public List<String> cabOrdenadas= new LinkedList<> ();  //Almacena de forma ordenada la declaracion de las cabeceras
     public List<LinkedList<String>> argsOrdenador= new LinkedList<> ();   //La posicion correspponde con la de la funcion en cabOrdenadas
     public HashMap<String,HashMap<String,String>> cabS= new HashMap<> (); //K= nombre subrutina V=HashMap de argumentos-->(k=nombreArgumento v=traduccionC)
     public HashMap<String,String> tiposFun= new HashMap<> (); //Asocia el nombre de la funcion con su tipo
-    private boolean error;
+    private boolean error;  //True: si se ha producido un error durante la traduccion, Flase: en caso contrario
 
     public Cabeceras(){
         this.error = false;
     }
 
 
+    //Metodo mediante el cual se añade una entrada en cabS con la clave "nombre", y se inserta de forma ordenada en cabOrdenadas
     public void addSub(String nombre){
         if(cabS.get (nombre)==null){
             HashMap mapa = new HashMap<String, String>();
@@ -24,8 +25,9 @@ public class Cabeceras {
             argsOrdenador.add (pos,new LinkedList<> ());
         }
 
-    }   //Añadimos una entrada nueva a la tabla hash de cabeceras
+    }
 
+    //Se encarga de mostrar el mensaje de error en caso de que no se use el mismo nombre de subrutina para la cabecera y el cierre de la declaracion de una subrutina
     public void compruebaCabSub(String nombre, String end, int linea, int columna){
         if(!nombre.equals (end)){
             System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la declaracion de la subrutina "+nombre+ " no coincide con el nombre usado en el cierre "+end);
@@ -34,8 +36,9 @@ public class Cabeceras {
     }
 
 
+    //Añadimos los valores de los argumentos de una subrutina a su formato traducido en C, antes de su ejecución, se ha llamado antes a "addArgSubFun"
     static int contadorS = 0;
-    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg, int linea, int columna){   //Definimos el estilo de los argumentos de una subrutina
+    public void addArgValuesSub(String nombre, String tipo, String inOut,String arg, int linea, int columna){
         String tipoAux=tipo;
         HashMap<String, String> argsS= cabS.get (nombre);
         String cadC = argsS.get(arg);
@@ -51,7 +54,6 @@ public class Cabeceras {
         argsS.put (arg,cadC);
         cabS.put (nombre,argsS);
 
-        int p = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size();
         if(!argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS).equals(arg.trim())){
             String prueba = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS);
             System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la subrutina " + nombre + ", el argumento " + nombre + " no esta en el orden correcto");
@@ -65,21 +67,21 @@ public class Cabeceras {
 
     }
 
-    public void addArgSubFun(String nombre, String arg){    //Añadimos argumentos a una cabecera correspondiente
-
-
+    //Inicializamos las estructuras con los argumentos declarados en las cabeceras de la subrutina/funcion, para más adelante realizar comprobaciones sobre si se declara su tipo correctamente o si se declaran en el orden correcto
+    public void addArgSubFun(String nombre, String arg){
         HashMap<String, String> args = cabS.get (nombre);
-        if(cabS.get (nombre)==null){
+        if(cabS.get (nombre)==null){ //Como se va a llamar una vez por cada argumento a este método, debemos distinguir dos casos, que sea el primer argumento, y tengamos que inicializar el HashMap, o que no sea el primer argumento
             cabS.put (nombre,new HashMap<String, String>());
         }else{
-            args.put (arg,"");//que le metes?
+            args.put (arg,"");
             cabS.put (nombre,args);
         }
-        int pos=cabOrdenadas.indexOf (nombre);
+        int pos=cabOrdenadas.indexOf (nombre);  //Como los indices coinciden, almacenamos el indice donde se encuentra el nombre de la subrutina para acceder a las variables ordenadas
         LinkedList<String> largs = argsOrdenador.get (pos);
         largs.addFirst (arg);
     }
 
+    //Añadimos la cabecera de una funcion, inicializando con ella cabS, cabOrdenadas y argsOrdenador
     public void addFun(String nombre){
         cabS.put (nombre,new HashMap<> ());
         cabOrdenadas.add (nombre);
@@ -87,6 +89,7 @@ public class Cabeceras {
         argsOrdenador.add (pos,new LinkedList<> ());
     }
 
+    //Asociamos el tipo a la funcion correspondiente, notificando además los errores correspondientes en caso de que sea necesario
     public void addTipoFun(String nombre, String tipo, String end, String nombreTipo, int linea, int columna){
 
         if(!nombre.equals(end)){
@@ -105,6 +108,7 @@ public class Cabeceras {
 
     }
 
+    //Añadimos los argumentos asociados a una funcion, notificando error, en caso de que no se realice correctamente la declaracion de argumentos
     static int contador = 0;
     public void addArgValuesFun(String nombre,String tipo,String arg, int linea, int columna){  //Le asignamos un formato a los argumentos de la declaracion de funciones
 
@@ -168,10 +172,13 @@ public class Cabeceras {
 
         return r;
     }
+
+    //Método que devuelve true en caso de que se haya producido un error durante la traduccion del codigo
     public boolean isError() {
         return error;
     }
 
+    //Getters/Setters...
     public List<String> getCabOrdenadas() {
         return cabOrdenadas;
     }
