@@ -60,12 +60,13 @@ public class Funciones {
     }
 
     //Despues de realizar las comprobaciones, con los dos metodos de arriba, creamos la función como debería de ser en C
-    public String construirFuncion(String tipo, String ident, String decFParamList, String dcllist, String sent, String sentlist, String exp, Cabeceras cab){
+    public String construirFuncion(String tipo, String ident, String decFParamList, String dcllist, String sent, String sentlist, String exp, Cabeceras cab, String norman, int linea){
         String funcion = "";
         int index = cab.getCabOrdenadas().indexOf(ident);
         List<String> argumentos = cab.getArgsOrdenador().get(index);
         String argumentosF = "";
         if(!argumentos.isEmpty()){
+            comprobacionCAB(decFParamList,norman,ident, linea);
             for(int i=0; i<=argumentos.size()-1; i++){
                 if(i==argumentos.size()-1){
                     argumentosF += cab.getCabS().get(ident).get(argumentos.get(i));
@@ -80,6 +81,19 @@ public class Funciones {
 
         return funcion;
     }
+
+    public void comprobacionCAB(String uno, String dos, String funcion, int linea){
+        String[] one = uno.split(" ");
+        String[] two = dos.split(" ");
+        for(int i=0; i<=one.length-1; i++){
+            if(!one[i].equals(two[i])){
+                System.out.println("Error en la funcion " + funcion + "en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
+            }
+        }
+
+    }
+
+
 
     //Parte de notable, añadir los punteros y & para la asignacion de valor en los punteros
     public String añadirPunterosCall(String idFun, String arg, Cabeceras cab, List<String> variables){

@@ -54,12 +54,12 @@ void PruebaIfs(void){
 		Subrutina0Param();
 		
 	}
-	if (1||a<b&&b>c!^c==d){
+	if (1 || a<b && b>c !^ c==d){
 		Subrutina1Param(Funcion1Param(i1) + i2 * i3);
 		concatenacionStrings = "comilla doble \" dentro" + "comilla simple ' dentro";
 		
 	}
-	if (!(0||a<=b)&&(b>=c^c!=d)){
+	if (!(0 || a<=b) && (b>=c ^ c!=d)){
 		Subrutina1Param(Funcion1Param(i1) + i2 * i3);
 		if (1){
 			Subrutina0Param();
@@ -69,13 +69,13 @@ void PruebaIfs(void){
 	}
 	else {
 		Subrutina1Param(Funcion1Param(i1) + i2 * i3);
-		if (1||a<b&&b>c!^c==d){
+		if (1 || a<b && b>c !^ c==d){
 			Subrutina1Param(Funcion1Param(i1) + i2 * i3);
 			concatenacionStrings = "comilla doble \" dentro" + "comilla simple ' dentro";
 		}
 		else {
 			Subrutina1Param(Funcion1Param(i1) + i2 * i3);
-			if (1||a<b&&b>c!^c==d){
+			if (1 || a<b && b>c !^ c==d){
 				Subrutina1Param(Funcion1Param(i1) + i2 * i3);
 				concatenacionStrings = "comilla doble \" dentro" + "comilla simple ' dentro";
 				
@@ -95,12 +95,12 @@ void PruebaDOs(void){
 		
 	}
 	
-	while (1||a<b&&b>c!^c==d){
+	while (1 || a<b && b>c !^ c==d){
 		PruebaIfs();
 		contador = contador + 1;
 	}
 	
-	while (1||a<b&&b>c^c==d){
+	while (1 || a<b && b>c ^ c==d){
 		PruebaIfs();
 		for(contador=45; contador!=-3; contador=contador+decremento){
 			Subrutina1Param(Funcion1Param(i1) + i2 * i3);
@@ -114,7 +114,7 @@ void PruebaDOs(void){
 		Subrutina1Param(Funcion1Param(i1) + i2 * i3);
 		Subrutina0Param();
 		
-		while (1||a<b&&b>c!^c==d){
+		while (1 || a<b && b>c !^ c==d){
 			PruebaIfs();
 			contador = contador + 1;
 		}

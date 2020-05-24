@@ -31,13 +31,14 @@ public class Subrutina {
         }
     }
     //Tras realizar la comprobación en el metodo anterior, creamos la subrutina como se espera en  C
-    public String construirSubrutina(int esVoid, String ident, String paramlist, String dcllist, String sent, String sentlist, Cabeceras cab){
+    public String construirSubrutina(int esVoid, String ident, String paramlist, String dcllist, String sent, String sentlist, Cabeceras cab, String norman, int linea){
 
 
         String subrutinaPrima =  "void " + ident;
         if(esVoid==1){
             subrutinaPrima +="(void)";}
         else{
+            comprobacionCAB(paramlist, norman,ident, linea);
             int index = cab.getCabOrdenadas().indexOf(ident);
             List<String> argumentos = cab.getArgsOrdenador().get(index);
             String argumentosF = "";
@@ -66,4 +67,16 @@ public class Subrutina {
         subrutinaPrima +=  "{\n" + dcllist + sent+ sentlist +"}\n";
         return subrutinaPrima;
     }
+
+    public void comprobacionCAB(String uno, String dos, String funcion, int linea){
+        String[] one = uno.split(" ");
+        String[] two = dos.split(" ");
+        for(int i=0; i<=one.length-1; i++){
+            if(!one[i].equals(two[i])){
+                System.out.println("Error en la subrutina " + funcion + "en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
+            }
+        }
+
+    }
+
 }

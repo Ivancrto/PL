@@ -56,7 +56,7 @@ public class Cabeceras {
 
         if(!argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS).equals(arg.trim())){
             String prueba = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contadorS);
-            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la subrutina " + nombre + ", el argumento " + nombre + " no esta en el orden correcto");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la subrutina " + nombre + ", el argumento " + arg + " no esta en el orden correcto");
             this.error=true;
         }
         contadorS++;
@@ -97,7 +97,7 @@ public class Cabeceras {
             this.error = true;
         }
         if(!(nombre).equals(nombreTipo)){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna + "el nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la funcion "+nombre+" y el nombre asociado al tipo devuelto "+nombreTipo+" no coinciden.");
             this.error = true;
         }
         else if((cabS.get (nombreTipo))==null){
@@ -114,7 +114,7 @@ public class Cabeceras {
 
         HashMap<String, String> cS = cabS.get (nombre);
         if(cS.get (arg)==null){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el argumento "+arg+"no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+arg);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +" el argumento "+arg+" no se corresponde a ninguno que se haya declarado en la cabecera de la funcion "+arg);
             this.error = true;
         }
         String cadC = cS.get (arg);
@@ -130,7 +130,7 @@ public class Cabeceras {
         int p = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).size();
         if(!argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contador).equals(arg.trim())){
             String prueba = argsOrdenador.get(cabOrdenadas.indexOf(nombre)).get(contador);
-            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la funcion " + nombre + ", el argumento " + nombre + " no esta en el orden correcto");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna +", debido a la funcion " + nombre + ", el argumento " + arg + " no esta en el orden correcto");
             this.error=true;
         }
         contador++;
