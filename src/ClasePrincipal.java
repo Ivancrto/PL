@@ -20,6 +20,7 @@ public class ClasePrincipal {
             CharStream input = CharStreams.fromFileName(args[0]);
 // Crear el objeto correspondiente al analizador léxico con el fichero de entrada
             grupalLexer analex = new grupalLexer(input);
+            //Le pasamos el nombre del fichero de entrada, el cual tiene que ser en formato ".for"
             Creador.nameFichero = input.getSourceName().substring(input.getSourceName().lastIndexOf("\\")+1);
 
 

@@ -23,13 +23,14 @@ public class Subrutina {
     public boolean isError() {
         return error;
     }
-
+    //Realizamos las comprobaciones de la subrutina, si estas no se cumplen se muestra por consola el error y no obtendremos el fichero de la traducción
     public void comprobacion(String uno, String dos, int linea, int columna){
         if(!(uno).equals(dos)){
             System.out.println("Error en la linea "+  linea + " columna "+ columna + " el nombre de la implementación de la subrutina "+uno+ " no coincide con el nombre usado en su cierre "+dos);
             this.error = true;
         }
     }
+    //Tras realizar la comprobación en el metodo anterior, creamos la subrutina como se espera en  C
     public String construirSubrutina(int esVoid, String ident, String paramlist, String dcllist, String sent, String sentlist, Cabeceras cab){
 
 

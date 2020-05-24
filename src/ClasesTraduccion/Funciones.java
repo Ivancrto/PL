@@ -25,7 +25,8 @@ public class Funciones {
     public boolean isError() {
         return error;
     }
-
+    //Mediante el siguiente metodo, realizamos todas las comprobaciones necesarias, si no se cumplen lanzara un mensaje por
+    //consola y no obtendremos el fichero de salida
     public void comprobacion(String uno, String dos, String tres, String cuatro, int linea, int columna){
         if(!(uno).equals(cuatro)){
             System.out.println("Error en la linea "+  linea + " columna "+ columna +" el nombre de la implementacion de la funcion "+uno+ " no coincide con el nombre usado en el cierre "+cuatro);
@@ -42,6 +43,8 @@ public class Funciones {
             this.error = true;
         }
     }
+    //Mediante el siguiente metodo, realizamos todas las comprobaciones necesarias de los argumentos, si no se cumplen lanzara un mensaje por
+    //consola y no obtendremos el fichero de salida
     public void comprobacionArgumentos(String nombreF, String nombreA, Cabeceras cab, int linea, int columna){
         if(cab.getCabS().get(nombreF)==null){
             System.out.println("Error en la linea "+  linea + " columna "+ columna + "no se declaro la función "+ nombreF);
@@ -56,7 +59,7 @@ public class Funciones {
         }
     }
 
-
+    //Despues de realizar las comprobaciones, con los dos metodos de arriba, creamos la función como debería de ser en C
     public String construirFuncion(String tipo, String ident, String decFParamList, String dcllist, String sent, String sentlist, String exp, Cabeceras cab){
         String funcion = "";
         int index = cab.getCabOrdenadas().indexOf(ident);
@@ -78,7 +81,7 @@ public class Funciones {
         return funcion;
     }
 
-
+    //Parte de notable, añadir los punteros y & para la asignacion de valor en los punteros
     public String añadirPunterosCall(String idFun, String arg, Cabeceras cab, List<String> variables){
         String call = "";
         if(arg=="()"){

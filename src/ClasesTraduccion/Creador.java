@@ -53,8 +53,9 @@ public class Creador {
     public void fusion(String textFS){
         this.fusionFuncionSubrutina += textFS + "\n";
     }
-    //Crea el fichero si la cabecera no contiene un error
+
     public void crear(){
+        //Crea el fichero si la cabecera, las funciones y las subrutinas no tienen errores
         if(!cabecera.isError() && !subrutina.isError() && !funciones.isError()){
             File file = new File("src/ResultadosTraduccion/" + nameFichero.substring(0,nameFichero.indexOf("."))+".c");
             file.delete();
@@ -91,7 +92,7 @@ public class Creador {
             return  cadenaCorrecta ;
         }
     }
-
+    //Metodo auxiliar para strConstComillas
     public String SimpleDoble(String s){
 
         if(s.trim().charAt(0)=='\"'){
