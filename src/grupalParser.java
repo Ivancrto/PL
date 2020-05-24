@@ -1869,7 +1869,7 @@ public class grupalParser extends Parser {
 			setState(336);
 			match(T__1);
 			setState(337);
-			dec_f_paramlist((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null));
+			dec_f_paramlist((((DecfunContext)_localctx).id1!=null?((DecfunContext)_localctx).id1.getText():null),1);
 			setState(338);
 			match(T__2);
 			setState(339);
@@ -1892,6 +1892,7 @@ public class grupalParser extends Parser {
 
 	public static class Dec_f_paramlistContext extends ParserRuleContext {
 		public String id;
+		public int declaration;
 		public String re;
 		public TipoContext tipo;
 		public Token IDENT;
@@ -1904,9 +1905,10 @@ public class grupalParser extends Parser {
 			return getRuleContext(Dec_f_paramlistContext.class,0);
 		}
 		public Dec_f_paramlistContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Dec_f_paramlistContext(ParserRuleContext parent, int invokingState, String id) {
+		public Dec_f_paramlistContext(ParserRuleContext parent, int invokingState, String id, int declaration) {
 			super(parent, invokingState);
 			this.id = id;
+			this.declaration = declaration;
 		}
 		@Override public int getRuleIndex() { return RULE_dec_f_paramlist; }
 		@Override
@@ -1919,8 +1921,8 @@ public class grupalParser extends Parser {
 		}
 	}
 
-	public final Dec_f_paramlistContext dec_f_paramlist(String id) throws RecognitionException {
-		Dec_f_paramlistContext _localctx = new Dec_f_paramlistContext(_ctx, getState(), id);
+	public final Dec_f_paramlistContext dec_f_paramlist(String id,int declaration) throws RecognitionException {
+		Dec_f_paramlistContext _localctx = new Dec_f_paramlistContext(_ctx, getState(), id, declaration);
 		enterRule(_localctx, 50, RULE_dec_f_paramlist);
 		try {
 			setState(356);
@@ -1945,9 +1947,13 @@ public class grupalParser extends Parser {
 				((Dec_f_paramlistContext)_localctx).IDENT = match(IDENT);
 				setState(350);
 				match(T__1);
-				creador.getCabecera().addArgValuesFun(_localctx.id,((Dec_f_paramlistContext)_localctx).tipo.t,(((Dec_f_paramlistContext)_localctx).IDENT!=null?((Dec_f_paramlistContext)_localctx).IDENT.getText():null),((Dec_f_paramlistContext)_localctx).IDENT.getLine(),  ((Dec_f_paramlistContext)_localctx).IDENT.getCharPositionInLine());
+
+				     if(_localctx.declaration==1){
+				        creador.getCabecera().addArgValuesFun(_localctx.id,((Dec_f_paramlistContext)_localctx).tipo.t,(((Dec_f_paramlistContext)_localctx).IDENT!=null?((Dec_f_paramlistContext)_localctx).IDENT.getText():null),((Dec_f_paramlistContext)_localctx).IDENT.getLine(),  ((Dec_f_paramlistContext)_localctx).IDENT.getCharPositionInLine());
+				     }
+
 				setState(352);
-				((Dec_f_paramlistContext)_localctx).dec_f_paramlist = dec_f_paramlist(_localctx.id);
+				((Dec_f_paramlistContext)_localctx).dec_f_paramlist = dec_f_paramlist(_localctx.id,_localctx.declaration);
 				((Dec_f_paramlistContext)_localctx).re =  (((Dec_f_paramlistContext)_localctx).IDENT!=null?((Dec_f_paramlistContext)_localctx).IDENT.getText():null) + " "+((Dec_f_paramlistContext)_localctx).dec_f_paramlist.re;
 				}
 				break;
@@ -3160,7 +3166,7 @@ public class grupalParser extends Parser {
 			setState(532);
 			match(T__1);
 			setState(533);
-			((CodfunContext)_localctx).dec_f_paramlist = dec_f_paramlist((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null));
+			((CodfunContext)_localctx).dec_f_paramlist = dec_f_paramlist((((CodfunContext)_localctx).id1!=null?((CodfunContext)_localctx).id1.getText():null),0);
 			setState(534);
 			((CodfunContext)_localctx).dcllist = dcllist();
 			setState(535);

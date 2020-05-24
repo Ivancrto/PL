@@ -47,11 +47,11 @@ public class Funciones {
     //consola y no obtendremos el fichero de salida
     public void comprobacionArgumentos(String nombreF, String nombreA, Cabeceras cab, int linea, int columna){
         if(cab.getCabS().get(nombreF)==null){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna + "no se declaro la función "+ nombreF);
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " no se declaro la función "+ nombreF);
             this.error = true;
         }
         if(cab.getCabS().get(nombreF)==null){
-            System.out.println("Error en la linea "+  linea + " columna "+ columna + "la función " + nombreF + " no fue declarado en la cabecera");
+            System.out.println("Error en la linea "+  linea + " columna "+ columna + " la función " + nombreF + " no fue declarado en la cabecera");
             this.error = true;
         } else if(cab.getCabS().get(nombreF).get(nombreA)==null){
             System.out.println("Error en la linea "+  linea + " columna "+ columna + " el argumento " + nombreA + " no fue declarado en la cabecera de " + nombreF  );
@@ -87,7 +87,7 @@ public class Funciones {
         String[] two = dos.split(" ");
         for(int i=0; i<=one.length-1; i++){
             if(!one[i].equals(two[i])){
-                System.out.println("Error en la funcion " + funcion + "en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
+                System.out.println("Error en la funcion " + funcion + " en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
             }
         }
 

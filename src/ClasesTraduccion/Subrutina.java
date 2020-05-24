@@ -73,7 +73,7 @@ public class Subrutina {
         String[] two = dos.split(" ");
         for(int i=0; i<=one.length-1; i++){
             if(!one[i].equals(two[i])){
-                System.out.println("Error en la subrutina " + funcion + "en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
+                System.out.println("Error en la subrutina " + funcion + " en la linea " + linea +", el argumento de la cabecera es " + one[i] + " y se esperaba " + two[i] );
             }
         }
 

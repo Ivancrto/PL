@@ -123,8 +123,14 @@ dec_s_paramlist [String id, int declaration] returns[String re]: tipo ',' 'INTEN
 tipoparam returns [String c]: 'IN' {$c="";}| 'OUT' {$c="*";}| 'INOUT'{$c="*";};
 
 
-decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,1] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id3.text, $id2.text,$id1.getLine(),  $id1.getCharPositionInLine());};
-dec_f_paramlist[String id] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {creador.getCabecera().addArgValuesFun($id,$tipo.t,$IDENT.text,$IDENT.getLine(),  $IDENT.getCharPositionInLine());} dec_f_paramlist[$id] {$re = $IDENT.text + " "+$dec_f_paramlist.re;}  |{$re="";} ;
+decfun: 'FUNCTION' id1=IDENT {creador.getCabecera().addFun($id1.text);}'(' nomparamlist[$id1.text,1] ')' tipo '::' id2=IDENT ';' dec_f_paramlist[$id1.text,1] 'END' 'FUNCTION' id3=IDENT {creador.getCabecera().addTipoFun($id1.text,$tipo.t,$id3.text, $id2.text,$id1.getLine(),  $id1.getCharPositionInLine());};
+dec_f_paramlist[String id, int declaration] returns[String re]: tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' {
+     if($declaration==1){
+        creador.getCabecera().addArgValuesFun($id,$tipo.t,$IDENT.text,$IDENT.getLine(),  $IDENT.getCharPositionInLine());
+     }
+}
+
+dec_f_paramlist[$id,$declaration] {$re = $IDENT.text + " "+$dec_f_paramlist.re;}  |{$re="";} ;
 
 
 sent returns [String re]: IDENT '=' exp ';' {$re =  $IDENT.text + " = " + $exp.re + ";\n";}
@@ -162,7 +168,7 @@ codproc returns[String s]: 'SUBROUTINE' id1=IDENT formal_paramlist[$id1.text,0] 
 
 };
 
-codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,0] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
+codfun returns[String s]: 'FUNCTION' id1=IDENT '(' nomparamlist[$id1.text,0] ')' tipo '::'  id2=IDENT ';' dec_f_paramlist[$id1.text,0] dcllist sent sentlist  id3=IDENT '=' exp ';' 'END' 'FUNCTION' id4=IDENT {
 
     creador.getFunciones().comprobacion($id1.text,$id2.text,$id3.text,$id4.text,$id1.getLine(),  $id1.getCharPositionInLine());//Comprobacion:
     creador.fusion(creador.getFunciones().construirFuncion( $tipo.t, $id1.text, $dec_f_paramlist.re, $dcllist.s, $sent.re, $sentlist.re,  $exp.re, creador.getCabecera(), $nomparamlist.re, $id1.getLine()));
